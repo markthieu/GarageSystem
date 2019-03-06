@@ -7,8 +7,29 @@ package tft_garits.Account;
 
 /**
  *
- * @author gregclemp
+ * @author George Kemp
  */
-public class PaymentAlert {
+public class PaymentAlert { //extends Alert?
+    private String message;
+    private Boolean seen;
     
+    public PaymentAlert(String message, Boolean seen){
+        //super()?
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public Boolean getSeen() {
+        return seen;
+    }
+
+    public void setSeen(Boolean seen) {
+        this.seen = seen;
+    }
 }

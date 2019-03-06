@@ -7,7 +7,7 @@ package tft_garits;
 
 /**
  *
- * @author gregclemp
+ * @author George Kemp
  */
 public class TFT_GARITS {
 

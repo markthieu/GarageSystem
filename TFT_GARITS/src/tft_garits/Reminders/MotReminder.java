@@ -7,7 +7,7 @@ package tft_garits.Reminders;
 
 /**
  *
- * @author gregclemp
+ * @author George Kemp
  */
 public class MotReminder {
     

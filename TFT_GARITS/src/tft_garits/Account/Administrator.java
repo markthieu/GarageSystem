@@ -7,8 +7,35 @@ package tft_garits.Account;
 
 /**
  *
- * @author gregclemp
+ * @author George Kemp
  */
-public class Administrator {
+public class Administrator extends User {
     
+    public Administrator(String name, String emailAddress, double hourlyRate, String jobTitle) {
+        super(name, emailAddress, hourlyRate, jobTitle);
+    }
+    
+    public User addAccount(int id, String name, String jobTitle, double rate){
+        throw new UnsupportedOperationException("addAccount not implemented yet");
+    }
+    
+    public void removeUser(int id){
+        throw new UnsupportedOperationException("removeUser not implemented yet");
+    }
+    
+    public void changeUser(int id){
+        throw new UnsupportedOperationException("changeUser not implemented yet");
+    }
+    
+    public void backUpDatabase(){
+        throw new UnsupportedOperationException("backUpDatabase not implemented yet");
+    }
+    
+    public void restoreDatabase(){
+        throw new UnsupportedOperationException("restoreDatabase not implemented yet");
+    }
+    
+    public void changeRate(int staffId){ //must also take in rate maybe?
+        throw new UnsupportedOperationException("changeRate not implemented yet");
+    }
 }

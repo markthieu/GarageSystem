@@ -7,7 +7,7 @@ package tft_garits.Job;
 
 /**
  *
- * @author gregclemp
+ * @author George Kemp
  */
 public class JobSheet {
     

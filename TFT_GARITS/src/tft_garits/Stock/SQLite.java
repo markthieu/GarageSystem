@@ -7,7 +7,7 @@ package tft_garits.Stock;
 
 /**
  *
- * @author gregclemp
+ * @author George Kemp
  */
 public class SQLite {
     

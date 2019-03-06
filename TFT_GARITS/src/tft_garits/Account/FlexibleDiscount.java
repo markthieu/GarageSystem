@@ -7,7 +7,7 @@ package tft_garits.Account;
 
 /**
  *
- * @author gregclemp
+ * @author George Kemp
  */
 public class FlexibleDiscount {
     

@@ -7,7 +7,7 @@ package tft_garits.Documents;
 
 /**
  *
- * @author gregclemp
+ * @author George Kemp
  */
 public class JobReport {
     
