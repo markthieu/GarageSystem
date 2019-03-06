@@ -11,4 +11,28 @@ package tft_garits.Account;
  */
 public class Alert {
     
+    private boolean active;
+    private String message;
+
+    public Alert(String message) {
+        this.message = message;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+    
+    
 }

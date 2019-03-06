@@ -10,5 +10,7 @@ package tft_garits.Account;
  * @author George Kemp
  */
 public class Foreperson {
-    
+    /* extends User, mechanic and receptionist 
+    --need to look into multiple inheritance, 
+    maybe switch to interfaces? */
 }

@@ -10,5 +10,7 @@ package tft_garits.Account;
  * @author George Kemp
  */
 public class Franchisee {
-    
+    /* extends multiple classes... 
+    --need to look into multiple inheritance, 
+    maybe switch to interfaces? */
 }
