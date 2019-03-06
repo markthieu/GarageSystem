@@ -1,14 +1,41 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package tft_garits.Documents;
 
-/**
- *
- * @author George Kemp
- */
 public class Report {
-    
+
+	private Date issueDate;
+	private String contents;
+
+	public Date getIssueDate() {
+		return this.issueDate;
+	}
+
+	/**
+	 * 
+	 * @param issueDate
+	 */
+	public void setIssueDate(Date issueDate) {
+		this.issueDate = issueDate;
+	}
+
+	public String getContents() {
+		return this.contents;
+	}
+
+	/**
+	 * 
+	 * @param contents
+	 */
+	public void setContents(String contents) {
+		this.contents = contents;
+	}
+
+	/**
+	 * 
+	 * @param contents
+	 */
+	public static Report Report(String contents) {
+		// TODO - implement Report.Report
+		throw new UnsupportedOperationException("Report.Report() needs implementation");
+	}
+
 }

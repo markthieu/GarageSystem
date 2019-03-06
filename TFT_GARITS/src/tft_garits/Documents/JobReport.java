@@ -1,14 +1,23 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package tft_garits.Documents;
 
-/**
- *
- * @author George Kemp
- */
-public class JobReport {
-    
+public class JobReport extends Report {
+
+	/**
+	 * 
+	 * @param contents
+	 */
+	public Report generateReport(String contents) {
+		// TODO - implement JobReport.generateReport
+		throw new UnsupportedOperationException("JobReport.generateReport() needs implementation");
+	}
+
+	/**
+	 * 
+	 * @param contents
+	 */
+	public static JobReport JobReport(String contents) {
+		// TODO - implement JobReport.JobReport
+		throw new UnsupportedOperationException("JobReport.JobReport() needs implementation");
+	}
+
 }

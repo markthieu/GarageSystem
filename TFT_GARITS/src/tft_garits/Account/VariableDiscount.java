@@ -11,9 +11,9 @@ package tft_garits.Account;
  */
 public class VariableDiscount extends Discount {
 
-    private String listOfDiscountedServices;
+    private String[] listOfDiscountedServices;
     private double cost;
-    private double listOfDiscounts;
+    private double[] listOfDiscounts;
 
     /**
      *
@@ -43,7 +43,7 @@ public class VariableDiscount extends Discount {
         throw new UnsupportedOperationException();
     }
 
-    public String getListOfDiscountedServices() {
+    public String[] getListOfDiscountedServices() {
         return this.listOfDiscountedServices;
     }
 
@@ -51,7 +51,7 @@ public class VariableDiscount extends Discount {
      *
      * @param listOfDiscountedServices
      */
-    public void setListOfDiscountedServices(String listOfDiscountedServices) {
+    public void setListOfDiscountedServices(String[] listOfDiscountedServices) {
         this.listOfDiscountedServices = listOfDiscountedServices;
     }
 
@@ -67,7 +67,7 @@ public class VariableDiscount extends Discount {
         this.cost = cost;
     }
 
-    public double getListOfDiscounts() {
+    public double[] getListOfDiscounts() {
         return this.listOfDiscounts;
     }
 
@@ -75,7 +75,7 @@ public class VariableDiscount extends Discount {
      *
      * @param listOfDiscounts
      */
-    public void setListOfDiscounts(double listOfDiscounts) {
+    public void setListOfDiscounts(double[] listOfDiscounts) {
         this.listOfDiscounts = listOfDiscounts;
     }
 

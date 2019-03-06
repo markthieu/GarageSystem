@@ -1,14 +1,23 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package tft_garits.Documents;
 
-/**
- *
- * @author George Kemp
- */
-public class BookingReport {
-    
+public class BookingReport extends Report {
+
+	/**
+	 * 
+	 * @param contents
+	 */
+	public Report generateReport(String contents) {
+		// TODO - implement BookingReport.generateReport
+		throw new UnsupportedOperationException("BookingReport.generateReport() needs implementation");
+	}
+
+	/**
+	 * 
+	 * @param contents
+	 */
+	public static BookingReport BookingReport(String contents) {
+		// TODO - implement BookingReport.BookingReport
+		throw new UnsupportedOperationException("BookingReport.BookingReport() needs implementation");
+	}
+
 }
