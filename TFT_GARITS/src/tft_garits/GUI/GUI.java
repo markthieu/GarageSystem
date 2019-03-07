@@ -5,37 +5,35 @@
  */
 package tft_garits.GUI;
 
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Toolkit;
+
 /**
  *
  * @author George Kemp
  */
 public class GUI {
 
+    //private Point location;
     
-    enum CurrentFrame{
-        LOGIN(), MAINMENU()
-    }
-    
-    CurrentFrame currentFrame = CurrentFrame.LOGIN;
-
-    void run() {
-        switch (currentFrame){
-            case LOGIN: new LoginForm(this).setVisible(true);
-                        break;
+    void run(String form) {
+        switch (form){
+            case "LOGIN": 
+                showForm(new LoginForm(this));
+                break;
                         
-            case MAINMENU: new MainMenuForm(this).setVisible(true);
-                        break;
+            case "MAINMENU": 
+                showForm(new MainMenuForm(this));
+                break;
+                
+            default: 
+                showForm(new ErrorForm(this));
         }
     }
     
-    void displayMenu(){
-        currentFrame = CurrentFrame.MAINMENU;
-        run();
+    void showForm(Form form){
+        form.setLocationRelativeTo(null); //centres the window on the screen
+        form.setVisible(true);
     }
-    
-    void displayLogin() {
-        currentFrame = CurrentFrame.LOGIN;
-        run();
-    }
-    
 }

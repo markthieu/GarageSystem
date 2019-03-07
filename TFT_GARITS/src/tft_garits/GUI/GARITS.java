@@ -19,7 +19,7 @@ public class GARITS { //GUI handler & main class
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new GUI().run();
+                new GUI().run("LOGIN");
             }
         });
     }

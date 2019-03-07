@@ -66,7 +66,7 @@ public class LoginForm extends Form {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(78, Short.MAX_VALUE)
+                .addContainerGap(79, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jButton1)
@@ -138,11 +138,7 @@ public class LoginForm extends Form {
         
         //assuming login success:
         this.dispose();
-        gui.displayMenu();
-        /*
-        MainMenuForm mainMenu = new MainMenuForm();
-        mainMenu.setVisible(true);
-        */
+        gui.run("MAINMENU");
     }//GEN-LAST:event_jButton1ActionPerformed
 
     

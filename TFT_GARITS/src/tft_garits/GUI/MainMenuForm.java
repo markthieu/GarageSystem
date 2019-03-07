@@ -10,7 +10,7 @@ package tft_garits.GUI;
  * @author George Kemp
  */
 public class MainMenuForm extends Form {
-    
+
     /**
      * Creates new form MainMenuForm
      */
@@ -42,16 +42,46 @@ public class MainMenuForm extends Form {
         jLabel1.setText("GARITS");
 
         jButton1.setText("Customers");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("Stock");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Tasks");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jButton4.setText("Job Sheet");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
 
         jButton5.setText("Documents");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         jButton6.setText("Settings");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
 
         jButton7.setText("Log out");
         jButton7.addActionListener(new java.awt.event.ActionListener() {
@@ -115,11 +145,47 @@ public class MainMenuForm extends Form {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
+        // CUSTOMERS
+        this.dispose();
+        gui.run("CUSTOMERS");
+    }
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
+        // STOCK
+        this.dispose();
+        gui.run("STOCK");
+    }
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {
+        // TASKS
+        this.dispose();
+        gui.run("TASKS");
+    }
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {
+        // job sheet
+        this.dispose();
+        gui.run("JOBSHEET");
+    }
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {
+        // documents
+        this.dispose();
+        gui.run("DOCUMENTS");
+    }
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {
+        // settings
+        this.dispose();
+        gui.run("SETTINGS");
+    }
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {
         // LOG OUT
         this.dispose();
-        gui.displayLogin();
-    }//GEN-LAST:event_jButton7ActionPerformed
+        gui.run("LOGIN");
+    }
 
     /**
      * @param args the command line arguments

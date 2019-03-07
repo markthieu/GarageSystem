@@ -12,6 +12,8 @@ package tft_garits.GUI;
 public abstract class Form extends javax.swing.JFrame {
 
     GUI gui;
+    public int width;
+    public int height;
     /**
      * Creates new form Form
      */
@@ -20,6 +22,7 @@ public abstract class Form extends javax.swing.JFrame {
         this.gui = gui;
     }
 
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
