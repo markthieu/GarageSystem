@@ -5,9 +5,6 @@
  */
 package tft_garits.GUI;
 
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.Toolkit;
 
 /**
  *
@@ -25,6 +22,30 @@ public class GUI {
                         
             case "MAINMENU": 
                 showForm(new MainMenuForm(this));
+                break;
+            
+            case "CUSTOMERS":
+                showForm(new CustomerForm(this));
+                break;
+                
+            case "STOCK":
+                showForm(new StockForm(this));
+                break;
+                
+            case "TASKS":
+                showForm(new TaskForm(this));
+                break;
+                
+            case "JOBSHEET":
+                showForm(new JobsForm(this));
+                break;
+                
+            case "DOCUMENTS":
+                showForm(new DocumentsForm(this));
+                break;
+                
+            case "SETTINGS":
+                showForm(new SettingsForm(this));
                 break;
                 
             default: 

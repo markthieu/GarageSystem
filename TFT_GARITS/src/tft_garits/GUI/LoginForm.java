@@ -135,10 +135,16 @@ public class LoginForm extends Form {
         
         //checkDetails()
         //login()?
-        
+        boolean login = false;
         //assuming login success:
-        this.dispose();
-        gui.run("MAINMENU");
+        if (login){
+            this.dispose();
+            gui.run("MAINMENU");
+        } else {
+            IncorrectPasswordForm form = new IncorrectPasswordForm();
+            form.setLocationRelativeTo(null); //centres the window on the screen
+            form.setVisible(true);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     
