@@ -5,14 +5,20 @@
  */
 package tft_garits.GUI;
 
+import tft_garits.Database.DatabaseHandler;
+
 
 /**
  *
  * @author George Kemp
  */
 public class GUI {
+    
+    public DatabaseHandler databaseHandler;
 
-    //private Point location;
+    public GUI(DatabaseHandler databaseHandler) {
+        this.databaseHandler = databaseHandler;
+    }
     
     void run(String form) {
         switch (form){
@@ -46,6 +52,10 @@ public class GUI {
                 
             case "SETTINGS":
                 showForm(new SettingsForm(this));
+                break;
+                
+            case "ADDUSER":
+                showForm(new AddUserForm(this));
                 break;
                 
             default: 

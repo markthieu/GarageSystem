@@ -5,6 +5,9 @@
  */
 package tft_garits.GUI;
 
+import tft_garits.Database.ConnectionHandler;
+import tft_garits.Database.DatabaseHandler;
+
 /**
  *
  * @author George Kemp
@@ -16,10 +19,17 @@ public class GARITS { //GUI handler & main class
      */
     public static void main(String args[]) {
         
+        ConnectionHandler connectionHandler = new ConnectionHandler("jdbc:sqlite:db/database.db");
+        DatabaseHandler databaseHandler = new DatabaseHandler(connectionHandler.connect(), "jdbc:sqlite:db/database.db");
+        
+        //creates account table and initialises with admin account
+        databaseHandler.createNewTable();
+        databaseHandler.insertUser("admin", "tft");
+        
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new GUI().run("LOGIN");
+                new GUI(databaseHandler).run("LOGIN");
             }
         });
     }

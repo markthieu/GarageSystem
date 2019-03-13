@@ -39,6 +39,20 @@ public class DatabaseHandler {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+        
+        
+        sql = "CREATE TABLE IF NOT EXISTS beep (\n"
+                + "	id integer PRIMARY KEY,\n"
+                + "	account_name text NOT NULL,\n"
+                + "	password text NOT NULL\n"
+                + ");";
+        
+        try (Statement stmt = conn.createStatement()) {
+            // create a new table
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public void insert(String name, String password) {
