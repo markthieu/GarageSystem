@@ -5,6 +5,8 @@
  */
 package tft_garits.GUI;
 
+import tft_garits.Account.Administrator;
+
 /**
  *
  * @author George Kemp
@@ -137,9 +139,23 @@ public class LoginForm extends Form {
         boolean login = gui.databaseHandler.checkPassword(userID, new String(password));
         
         if (login){
+            //set user type
+            //sql query to find user's account type
+            String userType = gui.databaseHandler.executeStringQuery("SELECT account_type FROM login WHERE user_name=?", userID);
+            
+            switch (userType){
+                case "Admin":
+                    gui.setCurrentUser(new Administrator(null, null, 0, null)); //this should construct from info in db
+                    break;
+                default:
+                    break;
+            }
+            
+            //navigate to main menu
             this.dispose();
             gui.run("MAINMENU");
         } else {
+            //error window for incorrect password
             IncorrectPasswordForm form = new IncorrectPasswordForm();
             form.setLocationRelativeTo(null); //centres the window on the screen
             form.setVisible(true);

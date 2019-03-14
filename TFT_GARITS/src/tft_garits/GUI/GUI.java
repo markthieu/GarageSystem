@@ -5,6 +5,8 @@
  */
 package tft_garits.GUI;
 
+import tft_garits.Account.Administrator;
+import tft_garits.Account.User;
 import tft_garits.Database.DatabaseHandler;
 
 
@@ -15,6 +17,7 @@ import tft_garits.Database.DatabaseHandler;
 public class GUI {
     
     public DatabaseHandler databaseHandler;
+    public User currentUser; 
 
     public GUI(DatabaseHandler databaseHandler) {
         this.databaseHandler = databaseHandler;
@@ -66,5 +69,9 @@ public class GUI {
     void showForm(Form form){
         form.setLocationRelativeTo(null); //centres the window on the screen
         form.setVisible(true);
+    }
+
+    void setCurrentUser(Administrator administrator) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

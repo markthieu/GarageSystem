@@ -35,7 +35,7 @@ public class DatabaseHandler {
         throw new UnsupportedOperationException("MySQLite.restoreDatabase() needs implementation");
     }
     
-    private void executeStatement(String sql){
+    public void executeStatement(String sql){
         try (Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {
@@ -43,21 +43,28 @@ public class DatabaseHandler {
         }
     }
     
+    public String executeStringQuery(String sql, String value){
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            //set values of ? in sql statement
+            pstmt.setString(1, value);
+        
+            ResultSet rs = pstmt.executeQuery();
+            
+            //return string found
+            return rs.getString(0);
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        return "sql error";
+    }
+    
     public void createNewTable() {
         // SQL statement for creating a new table
         // each sql statement is executed on its own
         // this could be simplified with multistatement execution
-        executeStatement("CREATE TABLE IF NOT EXISTS `Customer` (\n"
-                            + "`customer_no` int NOT NULL,\n"
-                            + "`customer_name` varchar NOT NULL,\n"
-                            + "`address` varchar NOT NULL,\n"
-                            + "`tel` int NOT NULL,\n"
-                            + "`post_code` varchar NOT NULL,\n"
-                            + "`email` varchar NOT NULL,\n"
-                            + "`fax` varchar NOT NULL,\n"
-                            + "PRIMARY KEY (`customer_no`)\n"
-                            + ");");
-        
         executeStatement("CREATE TABLE IF NOT EXISTS `Customer` (\n"
                             + "`customer_no` int NOT NULL,\n"
                             + "`customer_name` varchar NOT NULL,\n"
@@ -132,6 +139,7 @@ public class DatabaseHandler {
         executeStatement("CREATE TABLE IF NOT EXISTS `login` (\n"
                             + "`user_name` varchar NOT NULL,\n"
                             + "`password` varchar NOT NULL,\n"
+                            + "`account_type` varchar NOT NULL,\n"
                             + "PRIMARY KEY (`user_name`)\n"
                         + ");");
         /*        
@@ -155,7 +163,7 @@ public class DatabaseHandler {
         */
     }
 
-    public void insertUser(String name, String password) {
+    public void insertUser(String name, String password, String account_type) {
         String sql = "SELECT 1 FROM login WHERE user_name=?";
         boolean accountNameFound = true;
         
@@ -175,12 +183,13 @@ public class DatabaseHandler {
         
         //add account if the account name is not in the database
         if(!accountNameFound){
-            sql = "INSERT INTO login(user_name,password) VALUES(?,?)";
+            sql = "INSERT INTO login(user_name,password,account_type) VALUES(?,?,?)";
 
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 //set values of ? in sql statement
                 pstmt.setString(1, name);
                 pstmt.setString(2, password);
+                pstmt.setString(3, account_type);
 
                 pstmt.executeUpdate();
             } catch (SQLException e) {

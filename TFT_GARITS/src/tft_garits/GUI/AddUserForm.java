@@ -73,7 +73,7 @@ public class AddUserForm extends Form {
             }
         });
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Foreperson", "Franchisee", "Mechanic", "Receptionist" }));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -168,9 +168,10 @@ public class AddUserForm extends Form {
         String user_name = jTextField1.getText();
         char[] password = jPasswordField1.getPassword();
         String full_name = jTextField3.getText();
+        String account_type = jComboBox1.getSelectedItem().toString();
         //job_role =
         
-        gui.databaseHandler.insertUser(user_name, new String(password));
+        gui.databaseHandler.insertUser(user_name, new String(password), account_type);
         //needs to inform user of successful addition?
         jTextField1.setText("");
         jPasswordField1.setText("");
