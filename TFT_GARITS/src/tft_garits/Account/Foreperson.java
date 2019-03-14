@@ -9,8 +9,11 @@ package tft_garits.Account;
  *
  * @author George Kemp
  */
-public class Foreperson {
+public class Foreperson extends User {
     /* extends User, mechanic and receptionist 
     --need to look into multiple inheritance, 
     maybe switch to interfaces? */
+    public Foreperson(String name, String emailAddress, double hourlyRate, String jobTitle) {
+        super(name, emailAddress, hourlyRate, jobTitle);
+    }
 }

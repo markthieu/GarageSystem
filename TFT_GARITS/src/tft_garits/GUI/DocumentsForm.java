@@ -110,6 +110,40 @@ public class DocumentsForm extends Form {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
+        String document = jComboBox1.getSelectedItem().toString();
+        
+        this.dispose();
+        switch (document){
+            case "Booking Report":
+                gui.run("BOOKINGREPORT");
+                break;
+                
+            case "Job Report":
+                gui.run("JOBREPORT");
+                break;
+                
+            case "Stock Report":
+                gui.run("STOCKREPORT");
+                break;
+                
+            case "Payment Reminders":
+                PaymentReminderForm form1 = new PaymentReminderForm(gui);
+                form1.setLocationRelativeTo(null); //centres the window on the screen
+                form1.setVisible(true);
+                break;
+                
+            case "Late Payment Reminders":
+                PaymentReminderForm form2 = new PaymentReminderForm(gui);
+                form2.setLocationRelativeTo(null); //centres the window on the screen
+                form2.setVisible(true);
+                break;
+                
+            case "MOT Reminders":
+                MOTReminderForm form3 = new MOTReminderForm(gui);
+                form3.setLocationRelativeTo(null); //centres the window on the screen
+                form3.setVisible(true);
+                break;
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**

@@ -9,8 +9,11 @@ package tft_garits.Account;
  *
  * @author George Kemp
  */
-public class Franchisee {
+public class Franchisee extends User{
     /* extends multiple classes... 
     --need to look into multiple inheritance, 
     maybe switch to interfaces? */
+    public Franchisee(String name, String emailAddress, double hourlyRate, String jobTitle) {
+        super(name, emailAddress, hourlyRate, jobTitle);
+    }
 }

@@ -6,6 +6,10 @@
 package tft_garits.GUI;
 
 import tft_garits.Account.Administrator;
+import tft_garits.Account.Foreperson;
+import tft_garits.Account.Franchisee;
+import tft_garits.Account.Mechanic;
+import tft_garits.Account.Receptionist;
 
 /**
  *
@@ -141,12 +145,30 @@ public class LoginForm extends Form {
         if (login){
             //set user type
             //sql query to find user's account type
-            String userType = gui.databaseHandler.executeStringQuery("SELECT account_type FROM login WHERE user_name=?", userID);
+            String userType = gui.databaseHandler.executeStringQuery("SELECT account_type FROM login WHERE user_name=?", userID, "account_type");
+            System.out.println("access level: " + userType);
             
             switch (userType){
                 case "Admin":
                     gui.setCurrentUser(new Administrator(null, null, 0, null)); //this should construct from info in db
                     break;
+                    
+                case "Foreperson":
+                    gui.setCurrentUser(new Foreperson(null, null, 0, null)); //this should construct from info in db
+                    break;
+                    
+                case "Mechanic":
+                    gui.setCurrentUser(new Mechanic(null, null, null)); //this should construct from info in db
+                    break;
+                    
+                case "Receptionist":
+                    gui.setCurrentUser(new Receptionist(null, null, 0, null)); //this should construct from info in db
+                    break;
+                    
+                case "Franchisee":
+                    gui.setCurrentUser(new Franchisee(null, null, 0, null)); //this should construct from info in db
+                    break;
+                    
                 default:
                     break;
             }

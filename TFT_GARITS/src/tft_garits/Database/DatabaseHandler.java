@@ -43,7 +43,7 @@ public class DatabaseHandler {
         }
     }
     
-    public String executeStringQuery(String sql, String value){
+    public String executeStringQuery(String sql, String value, String search){
         
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             //set values of ? in sql statement
@@ -52,7 +52,9 @@ public class DatabaseHandler {
             ResultSet rs = pstmt.executeQuery();
             
             //return string found
-            return rs.getString(0);
+            while (rs.next()){
+                return rs.getString(search);
+            }
             
         } catch (SQLException e) {
             System.out.println(e.getMessage());

@@ -5,7 +5,6 @@
  */
 package tft_garits.GUI;
 
-import tft_garits.Account.Administrator;
 import tft_garits.Account.User;
 import tft_garits.Database.DatabaseHandler;
 
@@ -61,6 +60,22 @@ public class GUI {
                 showForm(new AddUserForm(this));
                 break;
                 
+            case "EXISTINGUSER":
+                showForm(new EditUserForm(this));
+                break;
+                
+            case "BOOKINGREPORT":
+                showForm(new BookingReportForm(this));
+                break;
+                
+            case "JOBREPORT":
+                showForm(new JobReportForm(this));
+                break;
+                
+            case "STOCKREPORT":
+                showForm(new StockReportForm(this));
+                break;
+                
             default: 
                 showForm(new ErrorForm(this));
         }
@@ -71,7 +86,7 @@ public class GUI {
         form.setVisible(true);
     }
 
-    void setCurrentUser(Administrator administrator) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    void setCurrentUser(User user) {
+        currentUser = user;
     }
 }
