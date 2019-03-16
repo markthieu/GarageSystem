@@ -19,8 +19,13 @@ public class GARITS { //GUI handler & main class
      */
     public static void main(String args[]) {
         
-        ConnectionHandler connectionHandler = new ConnectionHandler("jdbc:sqlite:db/database.db");
-        DatabaseHandler databaseHandler = new DatabaseHandler(connectionHandler.connect(), "jdbc:sqlite:db/database.db");
+        //database parameters
+        String url = "jdbc:postgresql://localhost:5433/postgres";
+        String user = "postgres";
+        String password = "root";
+        
+        ConnectionHandler connectionHandler = new ConnectionHandler(url, user, password);
+        DatabaseHandler databaseHandler = new DatabaseHandler(connectionHandler.connect(), url);
         
         //creates account table and initialises with admin account
         databaseHandler.createNewTable();

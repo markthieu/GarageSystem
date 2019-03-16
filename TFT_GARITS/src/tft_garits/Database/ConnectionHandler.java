@@ -15,16 +15,21 @@ import java.sql.SQLException;
 public class ConnectionHandler {
     
     private final String url;
+    private final String user;
+    private final String password;
     
-    public ConnectionHandler(String url){
+    public ConnectionHandler(String url, String user, String password){
         this.url = url;
+        this.user = user;
+        this.password = password;
     }
     
     public java.sql.Connection connect() {
         // SQLite connection string
         java.sql.Connection conn = null;
         try {
-            conn = DriverManager.getConnection(url);
+            conn = DriverManager.getConnection(url, user, password);
+            System.out.println("Connected to the PostgreSQL server successfully.");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
