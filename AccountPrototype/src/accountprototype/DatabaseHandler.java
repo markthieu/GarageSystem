@@ -27,35 +27,44 @@ public class DatabaseHandler {
     
     public void createNewTable() {
         // SQL statement for creating a new table
-        String sql = "CREATE TABLE IF NOT EXISTS accounts (\n"
-                + "	id integer PRIMARY KEY,\n"
-                + "	account_name text NOT NULL,\n"
-                + "	password text NOT NULL\n"
+        String sql = "CREATE TABLE accounts (\n"
+                + "     id SERIAL NOT NULL PRIMARY KEY,\n"
+                + "	account_name VARCHAR(10) NOT NULL,\n"
+                + "	password VARCHAR(10) NOT NULL\n"
                 + ");";
         
-        try (Statement stmt = conn.createStatement()) {
+        try (Statement pstmt = conn.createStatement()) {
             // create a new table
-            stmt.execute(sql);
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        
-        
-        sql = "CREATE TABLE IF NOT EXISTS beep (\n"
-                + "	id integer PRIMARY KEY,\n"
-                + "	account_name text NOT NULL,\n"
-                + "	password text NOT NULL\n"
-                + ");";
-        
-        try (Statement stmt = conn.createStatement()) {
-            // create a new table
-            stmt.execute(sql);
+            pstmt.executeUpdate(sql);
+            pstmt.close();
+            System.out.println("create table");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
 
     public void insert(String name, String password) {
+        String sql ="INSERT INTO accounts(account_name, password) \n" +
+                    "    SELECT ?, ?\n" +
+                    "WHERE NOT EXISTS (\n" +
+                    "    SELECT 1 FROM accounts WHERE account_name=?\n" +
+                    ");";
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            //set values of ? in sql statement
+            pstmt.setString(1, name);
+            pstmt.setString(2, password);
+            pstmt.setString(3, name);
+            pstmt.execute();
+            
+            //rs is closed if the name is not found
+            pstmt.close();
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        /*
         String sql = "SELECT 1 FROM accounts WHERE account_name=?";
         boolean accountNameFound = true;
         
@@ -68,6 +77,7 @@ public class DatabaseHandler {
             
             //rs is closed if the name is not found
             accountNameFound = !rs.isClosed();
+            pstmt.close();
             
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -83,6 +93,8 @@ public class DatabaseHandler {
                 pstmt.setString(2, password);
 
                 pstmt.executeUpdate();
+                pstmt.close();
+                
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
@@ -91,6 +103,7 @@ public class DatabaseHandler {
         } else {
             System.out.println("account '" + name + "' already in database");
         }
+        */
     }
 
     boolean checkPassword(String name, String password) {
@@ -125,7 +138,7 @@ public class DatabaseHandler {
             while(rs.next()){
                 out = out + rs.getString("account_name") + ", " + rs.getString("password") + "\n";
             }
-            
+            stmt.close();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }

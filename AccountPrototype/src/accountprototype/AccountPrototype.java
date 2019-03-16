@@ -19,8 +19,12 @@ public class AccountPrototype {
     static boolean loggedIn = false;
     
     public static void main(String[] args) {
-        ConnectionHandler connectionHandler = new ConnectionHandler("jdbc:sqlite:db/accounts.db");
-        DatabaseHandler databaseHandler = new DatabaseHandler(connectionHandler.connect(), "jdbc:sqlite:db/accounts.db");
+        String url = "jdbc:postgresql://localhost:5433/postgres";
+        String user = "postgres";
+        String password = "root";
+        
+        ConnectionHandler connectionHandler = new ConnectionHandler(url, user, password);
+        DatabaseHandler databaseHandler = new DatabaseHandler(connectionHandler.connect(), url);
         
         //creates account table and initialises with admin account
         databaseHandler.createNewTable();
@@ -41,9 +45,9 @@ public class AccountPrototype {
                 System.out.print(">Account name: ");
                 String account_name = reader.nextLine();
                 System.out.print(">Password: ");
-                String password = reader.nextLine();
+                String pword = reader.nextLine();
                 
-                if (databaseHandler.checkPassword(account_name, password)){
+                if (databaseHandler.checkPassword(account_name, pword)){
                     loggedIn = true;
                     System.out.println("logged in as: " + account_name);
                 } else {
@@ -55,12 +59,12 @@ public class AccountPrototype {
                 System.out.print(">Account name: ");
                 String account_name = reader.nextLine();
                 System.out.print(">Password: ");
-                String password = reader.nextLine();
+                String pword = reader.nextLine();
                 
                 //add account to db with those details
-                databaseHandler.insert(account_name, password);
+                databaseHandler.insert(account_name, pword);
                 
-            } else if ("print".equals(input) && loggedIn){
+            } else if ("print".equals(input)){// && loggedIn){
                 //prints all accounts and passwords
                 System.out.print(databaseHandler.tableToString());
                 
