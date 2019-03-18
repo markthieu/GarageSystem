@@ -17,6 +17,7 @@ public class FranchiseeMenu extends Form {
     public FranchiseeMenu(GUI gui) {
         super(gui);
         initComponents();
+        jLabel2.setText(gui.currentUser.getName());
     }
 
     /**
@@ -36,6 +37,7 @@ public class FranchiseeMenu extends Form {
         jButton5 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -90,6 +92,8 @@ public class FranchiseeMenu extends Form {
             }
         });
 
+        jLabel2.setText("Full Name");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -116,14 +120,21 @@ public class FranchiseeMenu extends Form {
                                 .addComponent(jButton4)))))
                 .addGap(72, 72, 72))
             .addGroup(layout.createSequentialGroup()
-                .addGap(155, 155, 155)
-                .addComponent(jButton7)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(155, 155, 155)
+                        .addComponent(jButton7))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel2)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(22, 22, 22)
+                .addContainerGap()
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -139,7 +150,7 @@ public class FranchiseeMenu extends Form {
                     .addComponent(jButton6))
                 .addGap(18, 18, 18)
                 .addComponent(jButton7)
-                .addContainerGap(68, Short.MAX_VALUE))
+                .addContainerGap(32, Short.MAX_VALUE))
         );
 
         pack();
@@ -149,6 +160,7 @@ public class FranchiseeMenu extends Form {
         // CUSTOMERS
         this.dispose();
         gui.run("CUSTOMERS");
+        jLabel2.setText(gui.currentUser.getName());
     }
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
@@ -184,7 +196,7 @@ public class FranchiseeMenu extends Form {
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {
         // LOG OUT
         this.dispose();
-        gui.run("LOGIN");
+        gui.run("LOGOUT");
     }
 
     /**
@@ -200,5 +212,6 @@ public class FranchiseeMenu extends Form {
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     // End of variables declaration//GEN-END:variables
 }

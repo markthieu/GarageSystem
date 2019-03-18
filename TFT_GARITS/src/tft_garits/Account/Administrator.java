@@ -11,8 +11,8 @@ package tft_garits.Account;
  */
 public class Administrator extends User {
     
-    public Administrator(String name, String emailAddress, double hourlyRate, String jobTitle) {
-        super(name, emailAddress, hourlyRate, jobTitle);
+    public Administrator() {
+        super("admin", "admin", 0, "admin");
     }
     
     public User addAccount(int id, String name, String jobTitle, double rate){

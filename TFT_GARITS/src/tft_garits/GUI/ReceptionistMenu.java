@@ -5,11 +5,6 @@
  */
 package tft_garits.GUI;
 
-import tft_garits.Account.Foreperson;
-import tft_garits.Account.Franchisee;
-import tft_garits.Account.Mechanic;
-import tft_garits.Account.Receptionist;
-
 /**
  *
  * @author George Kemp
@@ -21,16 +16,8 @@ public class ReceptionistMenu extends Form {
      */
     public ReceptionistMenu(GUI gui) {
         super(gui);
-        
-        if (gui.currentUser instanceof Franchisee){
-            initComponents();
-        } else if (gui.currentUser instanceof Foreperson){
-            initComponents();
-        } else if (gui.currentUser instanceof Mechanic){
-            initComponents();
-        } else if (gui.currentUser instanceof Receptionist){
-            initComponents();
-        }
+        initComponents();
+        jLabel2.setText(gui.currentUser.getName());
     }
 
     /**
@@ -47,6 +34,7 @@ public class ReceptionistMenu extends Form {
         jButton4 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -80,6 +68,8 @@ public class ReceptionistMenu extends Form {
             }
         });
 
+        jLabel2.setText("Full Name");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -98,13 +88,18 @@ public class ReceptionistMenu extends Form {
                         .addComponent(jButton6))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(155, 155, 155)
-                        .addComponent(jButton7)))
+                        .addComponent(jButton7))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel2)))
                 .addContainerGap(45, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(22, 22, 22)
+                .addContainerGap()
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1)
                 .addGap(27, 27, 27)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -113,7 +108,7 @@ public class ReceptionistMenu extends Form {
                     .addComponent(jButton6))
                 .addGap(32, 32, 32)
                 .addComponent(jButton7)
-                .addContainerGap(34, Short.MAX_VALUE))
+                .addContainerGap(28, Short.MAX_VALUE))
         );
 
         pack();
@@ -158,7 +153,7 @@ public class ReceptionistMenu extends Form {
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {
         // LOG OUT
         this.dispose();
-        gui.run("LOGIN");
+        gui.run("LOGOUT");
     }
 
     /**
@@ -171,5 +166,6 @@ public class ReceptionistMenu extends Form {
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     // End of variables declaration//GEN-END:variables
 }

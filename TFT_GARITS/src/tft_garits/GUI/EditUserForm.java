@@ -5,18 +5,23 @@
  */
 package tft_garits.GUI;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import tft_garits.Account.User;
+
 /**
  *
  * @author George Kemp
  */
 public class EditUserForm extends Form {
-
     /**
      * Creates new form AddUserForm
      */
     public EditUserForm(GUI gui) {
         super(gui);
         initComponents();
+        
+        refreshUserIdBox();
     }
 
     /**
@@ -35,12 +40,12 @@ public class EditUserForm extends Form {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
-        jButton2 = new javax.swing.JButton();
+        fullNameField = new javax.swing.JTextField();
+        editButton = new javax.swing.JButton();
         jPasswordField1 = new javax.swing.JPasswordField();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jComboBox2 = new javax.swing.JComboBox<>();
-        jButton3 = new javax.swing.JButton();
+        JobRoleBox = new javax.swing.JComboBox<>();
+        UserIdBox = new javax.swing.JComboBox<>();
+        deleteButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -61,27 +66,31 @@ public class EditUserForm extends Form {
 
         jLabel5.setText("Job Role:");
 
-        jTextField3.addActionListener(new java.awt.event.ActionListener() {
+        fullNameField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField3ActionPerformed(evt);
+                fullNameFieldActionPerformed(evt);
             }
         });
 
-        jButton2.setText("Edit");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        editButton.setText("Save Changes");
+        editButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                editButtonActionPerformed(evt);
             }
         });
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Foreperson", "Franchisee", "Mechanic", "Receptionist" }));
+        JobRoleBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Foreperson", "Franchisee", "Mechanic", "Receptionist" }));
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
-        jButton3.setText("Delete User");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        UserIdBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                UserIdBoxActionPerformed(evt);
+            }
+        });
+
+        deleteButton.setText("Delete User");
+        deleteButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteButtonActionPerformed(evt);
             }
         });
 
@@ -90,14 +99,9 @@ public class EditUserForm extends Form {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                        .addGap(88, 88, 88)
-                        .addComponent(jButton2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 119, Short.MAX_VALUE)
-                        .addComponent(jButton3))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel2)
                             .addComponent(jButton1)
@@ -106,15 +110,20 @@ public class EditUserForm extends Form {
                             .addComponent(jLabel5))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jTextField3)
+                            .addComponent(fullNameField)
                             .addComponent(jPasswordField1)
-                            .addComponent(jComboBox1, 0, 258, Short.MAX_VALUE)
-                            .addComponent(jComboBox2, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(JobRoleBox, 0, 258, Short.MAX_VALUE)
+                            .addComponent(UserIdBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(editButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(deleteButton)))
+                .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(0, 158, Short.MAX_VALUE)
+                .addContainerGap(141, Short.MAX_VALUE)
                 .addComponent(jLabel1)
-                .addGap(150, 150, 150))
+                .addGap(129, 129, 129))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -126,7 +135,7 @@ public class EditUserForm extends Form {
                 .addGap(51, 51, 51)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(UserIdBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
@@ -134,16 +143,16 @@ public class EditUserForm extends Form {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(fullNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(JobRoleBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2)
-                    .addComponent(jButton3))
-                .addContainerGap(43, Short.MAX_VALUE))
+                    .addComponent(editButton)
+                    .addComponent(deleteButton))
+                .addContainerGap(30, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -166,47 +175,86 @@ public class EditUserForm extends Form {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
+    private void fullNameFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fullNameFieldActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField3ActionPerformed
+    }//GEN-LAST:event_fullNameFieldActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // back to settings
         this.dispose();
-        gui.run("SETTINGS");
+        gui.run("MAINMENU");
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
         // take in field details & edit user's info in database
+        Object selected = UserIdBox.getSelectedItem();
+        int selectedIndex = UserIdBox.getSelectedIndex();
         
-        String user_name = jComboBox2.getSelectedItem().toString();
-        char[] password = jPasswordField1.getPassword();
-        String full_name = jTextField3.getText();
-        String account_type = jComboBox1.getSelectedItem().toString();
-        //job_role =
-        
-        //gui.databaseHandler.insertUser(user_name, new String(password), account_type);
-        //needs to inform user of successful addition?
-        jComboBox2.setSelectedIndex(0);
-        jPasswordField1.setText("");
-        jTextField3.setText("");
-    }//GEN-LAST:event_jButton2ActionPerformed
+        if (selected != null){
+            String user_name = selected.toString();
+            String password = new String(jPasswordField1.getPassword());
+            String full_name = fullNameField.getText();
+            String account_type = JobRoleBox.getSelectedItem().toString();
+            
+            if (!password.equals("") && !password.equals("password")){
+                gui.databaseHandler.executeStatement("UPDATE login SET password=? WHERE user_name=?", password, user_name);
+            }
+            
+            gui.databaseHandler.executeStatement("UPDATE staff SET staff_name=? WHERE user_name=?", full_name, user_name);
+            gui.databaseHandler.executeStatement("UPDATE login SET account_type=? WHERE user_name=?", account_type, user_name);
+            
+            refreshUserIdBox();
+            UserIdBox.setSelectedIndex(selectedIndex);
+            editButton.setText("Saved");
+        }
+    }//GEN-LAST:event_editButtonActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
         //remove user from database
+        Object selected = UserIdBox.getSelectedItem();
+        editButton.setText("Save Changes");
         
-        jComboBox2.setSelectedIndex(0);
-        jPasswordField1.setText("");
-        jTextField3.setText("");
-    }//GEN-LAST:event_jButton3ActionPerformed
+        if (selected != null){
+            deleteUser(selected.toString());
+            refreshUserIdBox();
+        }
+    }//GEN-LAST:event_deleteButtonActionPerformed
+
+    private void UserIdBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UserIdBoxActionPerformed
+        //on selecting userID, populate fields
+        Object selected = UserIdBox.getSelectedItem();
+        editButton.setText("Save Changes");
+        
+        if (selected != null){
+            String user_name = selected.toString();
+            String full_name = gui.databaseHandler.executeStringQuery("SELECT staff_name FROM staff WHERE user_name=?", user_name, "staff_name");
+            String account_type = gui.databaseHandler.executeStringQuery("SELECT account_type FROM login WHERE user_name=?", user_name, "account_type");
+            System.out.println(user_name + ", " + full_name + ", " + account_type);
+
+            fullNameField.setText(full_name);
+            jPasswordField1.setText("password");
+            //Foreperson, Franchisee, Mechanic, Receptionist
+            int index = account_type.equals("Foreperson") ? 1 : 
+                        account_type.equals("Franchisee") ? 2 : 
+                        account_type.equals("Mechanic") ? 3 :  
+                        account_type.equals("Receptionist") ? 4 : 0;
+            JobRoleBox.setSelectedIndex(index);
+        } else {
+            //UserIdBox.setSelectedIndex(0);
+            jPasswordField1.setText("");
+            fullNameField.setText("");
+            JobRoleBox.setSelectedIndex(0);
+        }
+    }//GEN-LAST:event_UserIdBoxActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> JobRoleBox;
+    private javax.swing.JComboBox<String> UserIdBox;
+    private javax.swing.JButton deleteButton;
+    private javax.swing.JButton editButton;
+    private javax.swing.JTextField fullNameField;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -214,6 +262,23 @@ public class EditUserForm extends Form {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPasswordField jPasswordField1;
-    private javax.swing.JTextField jTextField3;
     // End of variables declaration//GEN-END:variables
+
+    private void refreshUserIdBox() {
+        UserIdBox.removeAllItems();
+        
+        ArrayList<String> usernames = gui.databaseHandler.getUsernames();
+        
+        Collections.sort(usernames);
+        
+        UserIdBox.addItem(null);
+        usernames.forEach((u) -> {
+            UserIdBox.addItem(u);
+        });
+    }
+    
+    private void deleteUser(String deleteName){
+        gui.databaseHandler.executeStatement("DELETE FROM staff WHERE user_name='" + deleteName + "'");
+        gui.databaseHandler.executeStatement("DELETE FROM login WHERE user_name='" + deleteName + "'");
+    }
 }

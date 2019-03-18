@@ -18,9 +18,10 @@ public class User {
     private double hourlyRate;
     private String jobTitle;
 
-    public User(String name, String emailAddress, double hourlyRate, String jobTitle) {
+    public User(String username, String name, double hourlyRate, String jobTitle) {
+        this.username = username;
         this.name = name;
-        this.emailAddress = emailAddress;
+        this.emailAddress = "";
         this.hourlyRate = hourlyRate;
         this.jobTitle = jobTitle;
     }

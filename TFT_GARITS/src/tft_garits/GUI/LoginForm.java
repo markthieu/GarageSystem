@@ -146,33 +146,44 @@ public class LoginForm extends Form {
             //set user type
             //sql query to find user's account type
             String userType = gui.databaseHandler.executeStringQuery("SELECT account_type FROM login WHERE user_name=?", userID, "account_type");
-            System.out.println("access level: " + userType);
+            
+            //init account details
+            String full_name = null;
+            double hourly_rate = -1;
+            
+            //get account details
+            if (!userType.equals("Admin")){
+                full_name = gui.databaseHandler.executeStringQuery("SELECT staff_name FROM staff WHERE user_name=?", userID, "staff_name");
+                hourly_rate = gui.databaseHandler.executeDoubleQuery("SELECT hourly_rate FROM staff WHERE user_name=?", userID, "hourly_rate");
+            }
             
             switch (userType){
                 case "Admin":
-                    gui.setCurrentUser(new Administrator(null, null, 0, null)); //this should construct from info in db
+                    gui.setCurrentUser(new Administrator());
                     break;
                     
                 case "Foreperson":
-                    gui.setCurrentUser(new Foreperson(null, null, 0, null)); //this should construct from info in db
+                    gui.setCurrentUser(new Foreperson(userID, full_name, hourly_rate, userType));
                     break;
                     
                 case "Mechanic":
-                    gui.setCurrentUser(new Mechanic(null, null, null)); //this should construct from info in db
+                    gui.setCurrentUser(new Mechanic(userID, full_name, hourly_rate, userType));
                     break;
                     
                 case "Receptionist":
-                    gui.setCurrentUser(new Receptionist(null, null, 0, null)); //this should construct from info in db
+                    gui.setCurrentUser(new Receptionist(userID, full_name, hourly_rate, userType));
                     break;
                     
                 case "Franchisee":
-                    gui.setCurrentUser(new Franchisee(null, null, 0, null)); //this should construct from info in db
+                    gui.setCurrentUser(new Franchisee(userID, full_name, hourly_rate, userType));
                     break;
                     
                 default:
                     break;
             }
             
+            System.out.println("Welcome, " + full_name);
+            System.out.println("access level: " + userType);
             //navigate to main menu
             this.dispose();
             gui.run("MAINMENU");

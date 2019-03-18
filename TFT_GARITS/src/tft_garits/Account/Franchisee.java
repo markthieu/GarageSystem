@@ -13,7 +13,7 @@ public class Franchisee extends User{
     /* extends multiple classes... 
     --need to look into multiple inheritance, 
     maybe switch to interfaces? */
-    public Franchisee(String name, String emailAddress, double hourlyRate, String jobTitle) {
-        super(name, emailAddress, hourlyRate, jobTitle);
+    public Franchisee(String username, String name, double hourlyRate, String jobTitle) {
+        super(username, name, hourlyRate, jobTitle);
     }
 }

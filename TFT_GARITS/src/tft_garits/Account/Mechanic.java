@@ -11,8 +11,8 @@ package tft_garits.Account;
  */
 public class Mechanic extends User {
     
-    public Mechanic(String name, String emailAddress, String jobTitle) {
-        super(name, emailAddress, 105, jobTitle); //hourlyRate set to 105
+    public Mechanic(String username, String name, double hourlyRate, String jobTitle) {
+        super(username, name, hourlyRate, jobTitle);
     }
     
     public void allocateJob(int jobId){

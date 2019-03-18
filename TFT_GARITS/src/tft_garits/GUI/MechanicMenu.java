@@ -5,11 +5,6 @@
  */
 package tft_garits.GUI;
 
-import tft_garits.Account.Foreperson;
-import tft_garits.Account.Franchisee;
-import tft_garits.Account.Mechanic;
-import tft_garits.Account.Receptionist;
-
 /**
  *
  * @author George Kemp
@@ -21,16 +16,8 @@ public class MechanicMenu extends Form {
      */
     public MechanicMenu(GUI gui) {
         super(gui);
-        
-        if (gui.currentUser instanceof Franchisee){
-            initComponents();
-        } else if (gui.currentUser instanceof Foreperson){
-            initComponents();
-        } else if (gui.currentUser instanceof Mechanic){
-            initComponents();
-        } else if (gui.currentUser instanceof Receptionist){
-            initComponents();
-        }
+        initComponents();
+        jLabel2.setText(gui.currentUser.getName());
     }
 
     /**
@@ -46,6 +33,7 @@ public class MechanicMenu extends Form {
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -72,6 +60,8 @@ public class MechanicMenu extends Form {
             }
         });
 
+        jLabel2.setText("Full Name");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -88,14 +78,21 @@ public class MechanicMenu extends Form {
                         .addComponent(jButton4)))
                 .addGap(72, 72, 72))
             .addGroup(layout.createSequentialGroup()
-                .addGap(152, 152, 152)
-                .addComponent(jButton7)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(152, 152, 152)
+                        .addComponent(jButton7))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel2)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(22, 22, 22)
+                .addContainerGap()
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -103,7 +100,7 @@ public class MechanicMenu extends Form {
                     .addComponent(jButton3))
                 .addGap(18, 18, 18)
                 .addComponent(jButton7)
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
 
         pack();
@@ -148,7 +145,7 @@ public class MechanicMenu extends Form {
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {
         // LOG OUT
         this.dispose();
-        gui.run("LOGIN");
+        gui.run("LOGOUT");
     }
 
     /**
@@ -160,5 +157,6 @@ public class MechanicMenu extends Form {
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton7;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     // End of variables declaration//GEN-END:variables
 }

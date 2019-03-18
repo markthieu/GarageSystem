@@ -31,6 +31,11 @@ public class GUI {
         switch (form){
             case "LOGIN": 
                 showForm(new LoginForm(this));
+                break;
+                
+            case "LOGOUT":
+                showForm(new LoginForm(this));
+                System.out.println(currentUser.getUsername() + " log out");
                 currentUser = null;
                 break;
                         

@@ -159,7 +159,7 @@ public class AddUserForm extends Form {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // back to settings
         this.dispose();
-        gui.run("SETTINGS");
+        gui.run("MAINMENU");
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -171,8 +171,9 @@ public class AddUserForm extends Form {
         String account_type = jComboBox1.getSelectedItem().toString();
         //job_role =
         
-        gui.databaseHandler.insertUser(user_name, new String(password), account_type);
+        gui.databaseHandler.insertUser(user_name, new String(password), account_type, full_name);
         //needs to inform user of successful addition?
+        //POP UP
         jTextField1.setText("");
         jPasswordField1.setText("");
         jTextField3.setText("");

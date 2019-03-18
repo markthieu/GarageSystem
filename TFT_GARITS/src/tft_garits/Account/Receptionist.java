@@ -11,8 +11,8 @@ package tft_garits.Account;
  */
 public class Receptionist extends User {
     
-    public Receptionist(String name, String emailAddress, double hourlyRate, String jobTitle) {
-        super(name, emailAddress, hourlyRate, jobTitle);
+    public Receptionist(String username, String name, double hourlyRate, String jobTitle) {
+        super(username, name, hourlyRate, jobTitle);
     }
     
     /* Job needs definition

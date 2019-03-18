@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 /**
  *
@@ -45,6 +46,33 @@ public class DatabaseHandler {
         }
     }
     
+    public void executeStatement(String sql, String value){
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            //set values of ? in sql statement
+            pstmt.setString(1, value);
+            pstmt.execute();
+            pstmt.close();
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            System.out.println(sql);
+        }
+    }
+    
+    public void executeStatement(String sql, String value1, String value2){
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            //set values of ? in sql statement
+            pstmt.setString(1, value1);
+            pstmt.setString(2, value2);
+            pstmt.execute();
+            pstmt.close();
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            System.out.println(sql);
+        }
+    }
+    
     public String executeStringQuery(String sql, String value, String search){
         
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -64,6 +92,27 @@ public class DatabaseHandler {
         }
         
         return "sql error";
+    }
+    
+    public double executeDoubleQuery(String sql, String value, String search){
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            //set values of ? in sql statement
+            pstmt.setString(1, value);
+        
+            ResultSet rs = pstmt.executeQuery();
+            
+            //return string found
+            while (rs.next()){
+                return rs.getDouble(search);
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        return -1;
     }
     
     public void createNewTable() {
@@ -96,9 +145,10 @@ public class DatabaseHandler {
                         + ");");
         
         executeStatement("CREATE TABLE IF NOT EXISTS Staff (\n"
-                            + "staff_no INT NOT NULL,\n"
+                            + "staff_no SERIAL NOT NULL,\n"
                             + "staff_name varchar NOT NULL,\n"
                             + "user_name varchar NOT NULL,\n"
+                            + "hourly_rate NUMERIC(6, 2), \n" //NUMERIC(6,2) is a value with precision 6 & scale 2 (e.g, 4587.89, 321.11, 30.60)
                             + "PRIMARY KEY (staff_no)\n"
                         + ");");
         
@@ -178,7 +228,7 @@ public class DatabaseHandler {
         
     }
 
-    public void insertUser(String name, String password, String account_type) {
+    public void insertUser(String user_name, String password, String account_type, String full_name) {
         String sql ="INSERT INTO login(user_name, password, account_type) \n" +
                     "    SELECT ?, ?, ?\n" +
                     "WHERE NOT EXISTS (\n" +
@@ -187,16 +237,40 @@ public class DatabaseHandler {
         
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             //set values of ? in sql statement
-            pstmt.setString(1, name);
+            pstmt.setString(1, user_name);
             pstmt.setString(2, password);
             pstmt.setString(3, account_type);
-            pstmt.setString(4, name);
+            pstmt.setString(4, user_name);
             pstmt.execute();
             
             pstmt.close();
             
+            System.out.println("INSERT " + user_name + " into login.");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+        }
+        
+        //prevents admin being added to staff table
+        if (full_name != null){
+            sql =       "INSERT INTO staff(user_name, staff_name) \n" +
+                        "    SELECT ?, ?\n" +
+                        "WHERE NOT EXISTS (\n" +
+                        "    SELECT 1 FROM staff WHERE user_name=?\n" +
+                        ");";
+            
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                //set values of ? in sql statement
+                pstmt.setString(1, user_name);
+                pstmt.setString(2, full_name);
+                pstmt.setString(3, user_name);
+                pstmt.execute();
+                
+                pstmt.close();
+                
+                System.out.println("INSERT " + full_name + " into staff.");
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 
@@ -222,23 +296,23 @@ public class DatabaseHandler {
         return false;
     }
 
-    String userTableToString() {
-        String sql = "SELECT * FROM accounts";
-        String out = "";
+    public ArrayList<String> getUsernames() {
+        String sql = "SELECT user_name FROM staff;";
+        ArrayList<String> users = new ArrayList<>();
         
-        try(Statement stmt = conn.createStatement()){
-            //select all
-            ResultSet rs = stmt.executeQuery(sql);
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            ResultSet rs = pstmt.executeQuery();
             
-            //loop through result set and add to string the account details
             while(rs.next()){
-                out = out + rs.getString("account_name") + ", " + rs.getString("password") + "\n";
+                users.add(rs.getString("user_name"));
             }
             
+            pstmt.close();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         
-        return out;
+        assert(users.size() > 0);
+        return users;
     }
 }
