@@ -5,18 +5,32 @@
  */
 package tft_garits.GUI;
 
+import tft_garits.Account.Foreperson;
+import tft_garits.Account.Franchisee;
+import tft_garits.Account.Mechanic;
+import tft_garits.Account.Receptionist;
+
 /**
  *
  * @author George Kemp
  */
-public class MainMenuForm extends Form {
+public class MechanicMenu extends Form {
 
     /**
      * Creates new form MainMenuForm
      */
-    public MainMenuForm(GUI gui) {
+    public MechanicMenu(GUI gui) {
         super(gui);
-        initComponents();
+        
+        if (gui.currentUser instanceof Franchisee){
+            initComponents();
+        } else if (gui.currentUser instanceof Foreperson){
+            initComponents();
+        } else if (gui.currentUser instanceof Mechanic){
+            initComponents();
+        } else if (gui.currentUser instanceof Receptionist){
+            initComponents();
+        }
     }
 
     /**
@@ -29,31 +43,13 @@ public class MainMenuForm extends Form {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
-        jButton6 = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setText("GARITS");
-
-        jButton1.setText("Customers");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
-        jButton2.setText("Stock");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
 
         jButton3.setText("Tasks");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -66,20 +62,6 @@ public class MainMenuForm extends Form {
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton4ActionPerformed(evt);
-            }
-        });
-
-        jButton5.setText("Documents");
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
-            }
-        });
-
-        jButton6.setText("Settings");
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
             }
         });
 
@@ -100,23 +82,13 @@ public class MainMenuForm extends Form {
                         .addGap(169, 169, 169)
                         .addComponent(jLabel1))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(66, 66, 66)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButton2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton5))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButton3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton6))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButton1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 76, Short.MAX_VALUE)
-                                .addComponent(jButton4)))))
+                        .addGap(70, 70, 70)
+                        .addComponent(jButton3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 103, Short.MAX_VALUE)
+                        .addComponent(jButton4)))
                 .addGap(72, 72, 72))
             .addGroup(layout.createSequentialGroup()
-                .addGap(155, 155, 155)
+                .addGap(152, 152, 152)
                 .addComponent(jButton7)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -127,19 +99,11 @@ public class MainMenuForm extends Form {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton4))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2)
-                    .addComponent(jButton5))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton3)
-                    .addComponent(jButton6))
+                    .addComponent(jButton4)
+                    .addComponent(jButton3))
                 .addGap(18, 18, 18)
                 .addComponent(jButton7)
-                .addContainerGap(68, Short.MAX_VALUE))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
         pack();
@@ -178,7 +142,7 @@ public class MainMenuForm extends Form {
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {
         // settings
         this.dispose();
-        gui.run("SETTINGS");
+        gui.run("JOBLIST");
     }
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {
@@ -192,12 +156,8 @@ public class MainMenuForm extends Form {
      */
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables

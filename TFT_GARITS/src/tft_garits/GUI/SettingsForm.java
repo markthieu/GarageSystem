@@ -38,14 +38,14 @@ public class SettingsForm extends Form {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jButton1.setText("Menu");
+        jButton1.setText("Log Out");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
 
-        jLabel1.setText("Settings");
+        jLabel1.setText("Admin Settings");
 
         jButton2.setText("Add New User");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -74,7 +74,7 @@ public class SettingsForm extends Form {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jButton1)
-                        .addGap(56, 56, 56)
+                        .addGap(18, 18, 18)
                         .addComponent(jLabel1))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -125,7 +125,7 @@ public class SettingsForm extends Form {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         this.dispose();
-        gui.run("MAINMENU");
+        gui.run("LOGIN");
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
