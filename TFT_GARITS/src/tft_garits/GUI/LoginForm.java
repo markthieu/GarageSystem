@@ -189,9 +189,7 @@ public class LoginForm extends Form {
             gui.run("MAINMENU");
         } else {
             //error window for incorrect password
-            IncorrectPasswordForm form = new IncorrectPasswordForm();
-            form.setLocationRelativeTo(null); //centres the window on the screen
-            form.setVisible(true);
+            gui.throwErrorForm("incorrect password");
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 

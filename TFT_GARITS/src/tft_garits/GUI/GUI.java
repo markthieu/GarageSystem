@@ -110,4 +110,10 @@ public class GUI {
     void setCurrentUser(User user) {
         currentUser = user;
     }
+
+    void throwErrorForm(String text) {
+        ErrorNotification error = new ErrorNotification(text);
+        error.setLocationRelativeTo(null); //centres the window on the screen
+        error.setVisible(true);
+    }
 }

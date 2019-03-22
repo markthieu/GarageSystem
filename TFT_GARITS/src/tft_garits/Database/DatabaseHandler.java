@@ -73,11 +73,68 @@ public class DatabaseHandler {
         }
     }
     
+    public void executeArrayInsert(String sql, ArrayList<ValueObject> values){
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            //set values of ? in sql statement
+            for (int i = 0; i < values.size(); i++){
+                ValueObject v = values.get(i);
+                switch(v.getType()){
+                    case "String":
+                        pstmt.setString(i+1, v.toString());
+                        break;
+                    case "int":
+                        pstmt.setInt(i+1, v.toInt());
+                        break;
+                    case "double":
+                        pstmt.setDouble(i+1, v.toDouble());
+                        break;
+                }
+            }
+            pstmt.execute();
+            pstmt.close();
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            System.out.println(sql);
+        }
+    }
+    
     public String executeStringQuery(String sql, String value, String search){
         
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             //set values of ? in sql statement
             pstmt.setString(1, value);
+        
+            ResultSet rs = pstmt.executeQuery();
+            
+            //return string found
+            while (rs.next()){
+                return rs.getString(search);
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        return "sql error";
+    }
+    
+    public String executeStringQuery(String sql, ValueObject value, String search){
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            //set values of ? in sql statement
+            switch(value.getType()){
+                case "String":
+                    pstmt.setString(1, value.toString());
+                    break;
+                case "int":
+                    pstmt.setInt(1, value.toInt());
+                    break;
+                case "double":
+                    pstmt.setDouble(1, value.toDouble());
+                    break;
+            }
         
             ResultSet rs = pstmt.executeQuery();
             
@@ -105,6 +162,58 @@ public class DatabaseHandler {
             //return string found
             while (rs.next()){
                 return rs.getDouble(search);
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        return -1;
+    }
+    
+    public int executeIntQuery(String sql, String value, String search){
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            //set values of ? in sql statement
+            pstmt.setString(1, value);
+        
+            ResultSet rs = pstmt.executeQuery();
+            
+            //return string found
+            while (rs.next()){
+                return rs.getInt(search);
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        return -1;
+    }
+    
+    public int executeIntQuery(String sql, ValueObject value, String search){
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            //set values of ? in sql statement
+            switch(value.getType()){
+                case "String":
+                    pstmt.setString(1, value.toString());
+                    break;
+                case "int":
+                    pstmt.setInt(1, value.toInt());
+                    break;
+                case "double":
+                    pstmt.setDouble(1, value.toDouble());
+                    break;
+            }
+        
+            ResultSet rs = pstmt.executeQuery();
+            
+            //return string found
+            while (rs.next()){
+                return rs.getInt(search);
             }
             
             pstmt.close();
@@ -295,16 +404,34 @@ public class DatabaseHandler {
         
         return false;
     }
-
-    public ArrayList<String> getUsernames() {
-        String sql = "SELECT user_name FROM staff;";
-        ArrayList<String> users = new ArrayList<>();
+    
+    public boolean checkQuery(String sql, ValueObject compare, String search){
         
         try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            
+            switch(compare.getType()){
+                case "String":
+                    pstmt.setString(1, compare.toString());
+                    break;
+                case "int":
+                    pstmt.setInt(1, compare.toInt());
+                    break;
+                case "double":
+                    pstmt.setDouble(1, compare.toDouble());
+                    break;
+            }
+            
             ResultSet rs = pstmt.executeQuery();
             
             while(rs.next()){
-                users.add(rs.getString("user_name"));
+                switch(compare.getType()){
+                    case "String":
+                        return rs.getString(search).equals(compare.toString());
+                    case "int":
+                        return rs.getInt(search) == (compare.toInt());
+                    case "double":
+                        return rs.getDouble(search) == (compare.toDouble());
+                }
             }
             
             pstmt.close();
@@ -312,7 +439,44 @@ public class DatabaseHandler {
             System.out.println(e.getMessage());
         }
         
-        assert(users.size() > 0);
-        return users;
+        return false;
+    }
+
+    public ArrayList<String> getUsernames() {
+        String sql = "SELECT user_name FROM staff;";
+        String search = "user_name";
+        return getNameArray(sql, search);
+    }
+    
+    public ArrayList<String> getMechanics() {
+        String sql = "SELECT staff_name FROM staff WHERE user_name in "
+                +    "(SELECT user_name FROM login WHERE account_type='Mechanic');";
+        String search = "staff_name";
+        return getNameArray(sql, search);
+    }
+    
+    public ArrayList<String> getCustomers() {
+        String sql = "SELECT customer_name FROM customer;";
+        String search = "customer_name";
+        return getNameArray(sql, search);
+    }
+    
+    public ArrayList<String> getNameArray(String sql, String search) {
+        ArrayList<String> names = new ArrayList<>();
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            ResultSet rs = pstmt.executeQuery();
+            
+            while(rs.next()){
+                names.add(rs.getString(search));
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        assert(names.size() > 0);
+        return names;
     }
 }
