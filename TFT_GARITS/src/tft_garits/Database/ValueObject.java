@@ -5,6 +5,8 @@
  */
 package tft_garits.Database;
 
+import java.sql.Date;
+
 /**
  *
  * @author George Kemp
@@ -55,5 +57,31 @@ public class ValueObject {
         }
         
         return (double) value;
+    }
+    
+    public float toFloat() {
+        if (value instanceof String){
+            try {
+                return Float.parseFloat((String) value);
+            } catch (NumberFormatException e){
+                System.out.println("error parsing " + (String) value + " to string");
+                return 0;
+            }
+        }
+        
+        return (float) value;
+    }
+    
+    public Date toDate(){
+        assert(value instanceof String);
+        String v = (String) value;
+        String[] split = v.split("-");
+        
+        assert(split.length == 3);
+        
+        Date date = new Date(Integer.parseInt(split[0]),
+                             Integer.parseInt(split[1]),
+                             Integer.parseInt(split[2]));
+        return date;
     }
 }

@@ -88,6 +88,12 @@ public class DatabaseHandler {
                     case "double":
                         pstmt.setDouble(i+1, v.toDouble());
                         break;
+                    case "date":
+                        pstmt.setDate(i+1, v.toDate());
+                        break;
+                    case "float":
+                        pstmt.setFloat(i+1, v.toFloat());
+                        break;
                 }
             }
             pstmt.execute();
@@ -229,27 +235,26 @@ public class DatabaseHandler {
         // each sql statement is executed on its own
         // this could be simplified with multistatement execution
         executeStatement("CREATE TABLE IF NOT EXISTS Customer (\n"
-                            + "customer_no int NOT NULL,\n"
+                            + "customer_no SERIAL NOT NULL,\n"
                             + "customer_name varchar NOT NULL,\n"
                             + "address varchar NOT NULL,\n"
-                            + "tel int NOT NULL,\n"
+                            + "tel int,\n"
                             + "post_code varchar NOT NULL,\n"
-                            + "email varchar NOT NULL,\n"
-                            + "fax varchar NOT NULL,\n"
+                            + "email varchar,\n"
+                            + "fax varchar,\n"
                             + "PRIMARY KEY (customer_no)\n"
                         + ");");
         
         executeStatement("CREATE TABLE IF NOT EXISTS Job (\n"
-                            + "job_no int NOT NULL,\n"
+                            + "job_no SERIAL NOT NULL,\n"
                             + "customer_no int NOT NULL,\n"
-                            + "status varchar NOT NULL,\n"
+                            + "status varchar NOT NULL default 'Pending',\n"
                             + "date_booked DATE NOT NULL,\n"
-                            + "reg_no int NOT NULL,\n"
+                            + "reg_no varchar NOT NULL,\n"
                             + "staff_no int NOT NULL,\n"
-                            + "task_no int NOT NULL,\n"
                             + "totalAmount FLOAT NOT NULL,\n"
-                            + "estimated_time TIME NOT NULL,\n"
-                            + "completion_date DATE NOT NULL,\n"
+                            + "estimated_time FLOAT NOT NULL,\n"
+                            + "completion_date DATE,\n"
                             + "PRIMARY KEY (job_no)\n"
                         + ");");
         
@@ -262,7 +267,8 @@ public class DatabaseHandler {
                         + ");");
         
         executeStatement("CREATE TABLE IF NOT EXISTS Task (\n"
-                            + "task_no int NOT NULL,\n"
+                            + "task_no SERIAL NOT NULL,\n"
+                            + "job_no int NOT NULL,\n"
                             + "task_desc varchar NOT NULL,\n"
                             + "part_no int NOT NULL,\n"
                             + "PRIMARY KEY (task_no)\n"
@@ -277,13 +283,13 @@ public class DatabaseHandler {
                         + ");");
                 
         executeStatement("CREATE TABLE IF NOT EXISTS Vehicle (\n"
-                            + "reg_no int NOT NULL,\n"
+                            + "reg_no varchar NOT NULL,\n"
                             + "customer_no int NOT NULL,\n"
                             + "make varchar NOT NULL,\n"
                             + "model varchar NOT NULL,\n"
-                            + "colour varchar NOT NULL,\n"
-                            + "eng_serial varchar NOT NULL,\n"
-                            + "chassis_no varchar NOT NULL,\n"
+                            + "colour varchar,\n"
+                            + "eng_serial varchar,\n"
+                            + "chassis_no varchar,\n"
                             + "PRIMARY KEY (reg_no)\n"
                         + ");");
                 
@@ -317,15 +323,15 @@ public class DatabaseHandler {
         executeStatement("ALTER TABLE Job DROP CONSTRAINT IF EXISTS Job_fk2;");
         executeStatement("ALTER TABLE Job ADD CONSTRAINT Job_fk2 FOREIGN KEY (staff_no) REFERENCES Staff(staff_no);");
                 
-        executeStatement("ALTER TABLE Job DROP CONSTRAINT IF EXISTS Job_fk3;");
-        executeStatement("ALTER TABLE Job ADD CONSTRAINT Job_fk3 FOREIGN KEY (task_no) REFERENCES Task(task_no);");
-                
         executeStatement("ALTER TABLE Staff DROP CONSTRAINT IF EXISTS Staff_fk0;");
         executeStatement("ALTER TABLE Staff ADD CONSTRAINT Staff_fk0 FOREIGN KEY (user_name) REFERENCES login(user_name);");
                 
         executeStatement("ALTER TABLE Task DROP CONSTRAINT IF EXISTS Task_fk0;");
         executeStatement("ALTER TABLE Task ADD CONSTRAINT Task_fk0 FOREIGN KEY (part_no) REFERENCES Part(part_no);");
                 
+        executeStatement("ALTER TABLE Task DROP CONSTRAINT IF EXISTS Task_fk1;");
+        executeStatement("ALTER TABLE Task ADD CONSTRAINT Task_fk1 FOREIGN KEY (job_no) REFERENCES Job(job_no);");
+        
         executeStatement("ALTER TABLE Vehicle DROP CONSTRAINT IF EXISTS Vehicle_fk0;");
         executeStatement("ALTER TABLE Vehicle ADD CONSTRAINT Vehicle_fk0 FOREIGN KEY (customer_no) REFERENCES Customer(customer_no);");
                 
@@ -478,5 +484,28 @@ public class DatabaseHandler {
         
         assert(names.size() > 0);
         return names;
+    }
+
+    public int getNextVal(String table, String column) {
+        String sql = "SELECT nextval(pg_get_serial_sequence(?,?)) AS id";
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            
+            pstmt.setString(1, table);
+            pstmt.setString(2, column);
+            
+            ResultSet rs = pstmt.executeQuery();
+            
+            while(rs.next()){
+                
+                return rs.getInt("id");
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        return -1;
     }
 }
