@@ -441,13 +441,30 @@ public class JobsForm extends Form {
             
             String reg_no = vehicleRegTextField.getText();
             
+            
+            
+            ArrayList<ValueObject> values = new ArrayList<>();
+            //insert vehicle
+            gui.databaseHandler.executeStatement("DELETE FROM vehicle WHERE reg_no='" + reg_no + "'");
+            String sql = "INSERT INTO vehicle "
+                + "(reg_no, customer_no, make, model)"
+                + "values (?, ?, ?, ?);";
+            
+            values.add(new ValueObject("String", reg_no)); //add reg_no
+            values.add(new ValueObject("int", customerID)); //add customer_no
+            values.add(new ValueObject("String", makeTextField.getText())); //add make
+            values.add(new ValueObject("String", modelTextField.getText())); //add model
+            
+            gui.databaseHandler.executeArrayInsert(sql, values);
+            
+            
             //insert job
             gui.databaseHandler.executeStatement("DELETE FROM job WHERE job_no='" + jobID + "'");
-            String sql = "INSERT INTO job "
+            sql = "INSERT INTO job "
                     + "(job_no, customer_no, status, date_booked, reg_no, staff_no, totalamount, estimated_time, completion_date)"
                     + "values (?, ?, ?, ?, ?, ?, ?, ?, ?);";
             
-            ArrayList<ValueObject> values = new ArrayList<>();
+            values.clear();
             
             values.add(new ValueObject("int", jobID)); //add job_no
             values.add(new ValueObject("int", customerID)); //add customer_no
@@ -461,23 +478,6 @@ public class JobsForm extends Form {
             
             gui.databaseHandler.executeArrayInsert(sql, values);
             
-            //insert vehicle
-            gui.databaseHandler.executeStatement("DELETE FROM vehicle WHERE reg_no='" + reg_no + "'");
-            sql = "INSERT INTO vehicle "
-                + "(reg_no, customer_no, make, model)"
-                + "values (?, ?, ?, ?);";
-            
-            values.clear();
-            
-            values.add(new ValueObject("String", reg_no)); //add reg_no
-            values.add(new ValueObject("int", customerID)); //add customer_no
-            values.add(new ValueObject("String", makeTextField.getText())); //add make
-            values.add(new ValueObject("String", modelTextField.getText())); //add model
-            
-            gui.databaseHandler.executeArrayInsert(sql, values);
-            
-            
-            //
             saveButton.setText("Changes Saved");
             
         }

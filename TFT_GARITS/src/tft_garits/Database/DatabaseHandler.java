@@ -178,6 +178,26 @@ public class DatabaseHandler {
         return -1;
     }
     
+    public float executeFloatQuery(String sql, String value, String search) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            //set values of ? in sql statement
+            pstmt.setString(1, value);
+        
+            ResultSet rs = pstmt.executeQuery();
+            
+            //return string found
+            while (rs.next()){
+                return rs.getFloat(search);
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        return -1;
+    }
+    
     public int executeIntQuery(String sql, String value, String search){
         
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -270,16 +290,24 @@ public class DatabaseHandler {
                             + "task_no SERIAL NOT NULL,\n"
                             + "job_no int NOT NULL,\n"
                             + "task_desc varchar NOT NULL,\n"
-                            + "part_no int NOT NULL,\n"
                             + "PRIMARY KEY (task_no)\n"
                         + ");");
                 
         executeStatement("CREATE TABLE IF NOT EXISTS Part (\n"
-                            + "part_no int NOT NULL,\n"
+                            + "part_no SERIAL NOT NULL,\n"
                             + "part_name varchar NOT NULL,\n"
                             + "description varchar NOT NULL,\n"
                             + "price FLOAT NOT NULL,\n"
+                            + "stock_amount int NOT NULL,\n"
+                            + "threshold int NOT NULL DEFAULT 10,\n"
                             + "PRIMARY KEY (part_no)\n"
+                        + ");");
+        
+        executeStatement("CREATE TABLE IF NOT EXISTS Task_Part (\n"
+                            + "task_no int REFERENCES Task (task_no) ON UPDATE CASCADE ON DELETE CASCADE,\n"
+                            + "part_no int REFERENCES Part (part_no) ON UPDATE CASCADE,\n"
+                            + "amount int NOT NULL DEFAULT 1,\n"
+                            + "PRIMARY KEY (task_no)\n"
                         + ");");
                 
         executeStatement("CREATE TABLE IF NOT EXISTS Vehicle (\n"
@@ -291,11 +319,6 @@ public class DatabaseHandler {
                             + "eng_serial varchar,\n"
                             + "chassis_no varchar,\n"
                             + "PRIMARY KEY (reg_no)\n"
-                        + ");");
-                
-        executeStatement("CREATE TABLE IF NOT EXISTS Stock (\n"
-                            + "qty int NOT NULL,\n"
-                            + "part_no int NOT NULL\n"
                         + ");");
                 
         executeStatement("CREATE TABLE IF NOT EXISTS AccountHolder (\n"
@@ -327,16 +350,10 @@ public class DatabaseHandler {
         executeStatement("ALTER TABLE Staff ADD CONSTRAINT Staff_fk0 FOREIGN KEY (user_name) REFERENCES login(user_name);");
                 
         executeStatement("ALTER TABLE Task DROP CONSTRAINT IF EXISTS Task_fk0;");
-        executeStatement("ALTER TABLE Task ADD CONSTRAINT Task_fk0 FOREIGN KEY (part_no) REFERENCES Part(part_no);");
-                
-        executeStatement("ALTER TABLE Task DROP CONSTRAINT IF EXISTS Task_fk1;");
-        executeStatement("ALTER TABLE Task ADD CONSTRAINT Task_fk1 FOREIGN KEY (job_no) REFERENCES Job(job_no);");
+        executeStatement("ALTER TABLE Task ADD CONSTRAINT Task_fk0 FOREIGN KEY (job_no) REFERENCES Job(job_no);");
         
         executeStatement("ALTER TABLE Vehicle DROP CONSTRAINT IF EXISTS Vehicle_fk0;");
         executeStatement("ALTER TABLE Vehicle ADD CONSTRAINT Vehicle_fk0 FOREIGN KEY (customer_no) REFERENCES Customer(customer_no);");
-                
-        executeStatement("ALTER TABLE Stock DROP CONSTRAINT IF EXISTS Stock_fk0;");
-        executeStatement("ALTER TABLE Stock ADD CONSTRAINT Stock_fk0 FOREIGN KEY (part_no) REFERENCES Part(part_no);");
                 
         executeStatement("ALTER TABLE AccountHolder DROP CONSTRAINT IF EXISTS AccountHolder_fk0;");
         executeStatement("ALTER TABLE AccountHolder ADD CONSTRAINT AccountHolder_fk0 FOREIGN KEY (customer_no) REFERENCES Customer(customer_no);");
@@ -467,6 +484,29 @@ public class DatabaseHandler {
         return getNameArray(sql, search);
     }
     
+    public ArrayList<Integer> getIdNos(String table, String column){
+        ArrayList<Integer> ids = new ArrayList<>();
+        String sql = "SELECT " + column + " FROM " + table;
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            //pstmt.setString(1, column);
+            //pstmt.setString(2, table);
+            
+            ResultSet rs = pstmt.executeQuery();
+            
+            while(rs.next()){
+                ids.add(rs.getInt(column));
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        assert(ids.size() > 0);
+        return ids;
+    }
+    
     public ArrayList<String> getNameArray(String sql, String search) {
         ArrayList<String> names = new ArrayList<>();
         
@@ -508,4 +548,6 @@ public class DatabaseHandler {
         
         return -1;
     }
+
+    
 }

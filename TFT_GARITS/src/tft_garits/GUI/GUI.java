@@ -58,7 +58,7 @@ public class GUI {
                 break;
                 
             case "STOCK":
-                showForm(new StockForm(this));
+                showForm(new StockMenu(this));
                 break;
                 
             case "TASKS":
@@ -95,6 +95,18 @@ public class GUI {
                 
             case "STOCKREPORT":
                 showForm(new StockReportForm(this));
+                break;
+                
+            case "ORDERSTOCK":
+                showForm(new StockForm(this));
+                break;
+                
+            case "ADDPART":
+                showForm(new AddPartForm(this));
+                break;
+                
+            case "EDITPART":
+                showForm(new EditPartForm(this));
                 break;
                 
             default: 
