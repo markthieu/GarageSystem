@@ -30,7 +30,7 @@ public class GARITS { //GUI handler & main class
         //creates account table and initialises with admin account
         databaseHandler.createNewTable();
         databaseHandler.insertUser("admin", "tft", "Admin", null);
-        
+
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {

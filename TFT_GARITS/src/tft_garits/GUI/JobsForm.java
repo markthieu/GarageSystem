@@ -5,7 +5,11 @@
  */
 package tft_garits.GUI;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import tft_garits.Database.ValueObject;
 
@@ -49,7 +53,6 @@ public class JobsForm extends Form {
         jobNoTextField = new javax.swing.JTextField();
         bookingDateTextField = new javax.swing.JTextField();
         telNoTextField = new javax.swing.JTextField();
-        workReqTextField = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         createButton = new javax.swing.JButton();
         saveButton = new javax.swing.JButton();
@@ -63,7 +66,6 @@ public class JobsForm extends Form {
         mechanicComboBox = new javax.swing.JComboBox<>();
         jLabel14 = new javax.swing.JLabel();
         bayAllocationTextField = new javax.swing.JTextField();
-        partsReqTextField = new javax.swing.JTextField();
         jLabel15 = new javax.swing.JLabel();
         timeTakenTextField = new javax.swing.JTextField();
         costTextField = new javax.swing.JTextField();
@@ -76,6 +78,10 @@ public class JobsForm extends Form {
         searchButton = new javax.swing.JButton();
         customerNameBox = new javax.swing.JComboBox<>();
         clearButton = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        workRequiredList = new javax.swing.JList<>();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        partsRequiredList = new javax.swing.JList<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -103,8 +109,6 @@ public class JobsForm extends Form {
                 jobNoTextFieldActionPerformed(evt);
             }
         });
-
-        workReqTextField.setEditable(false);
 
         jLabel8.setText("Work Required:");
 
@@ -142,10 +146,13 @@ public class JobsForm extends Form {
 
         jLabel14.setText("Bay Allocation:");
 
-        partsReqTextField.setEditable(false);
-
         jLabel15.setText("Parts Required:");
 
+        costTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                costTextFieldFocusLost(evt);
+            }
+        });
         costTextField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 costTextFieldActionPerformed(evt);
@@ -189,6 +196,10 @@ public class JobsForm extends Form {
                 clearButtonActionPerformed(evt);
             }
         });
+
+        jScrollPane1.setViewportView(workRequiredList);
+
+        jScrollPane2.setViewportView(partsRequiredList);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -240,28 +251,27 @@ public class JobsForm extends Form {
                                         .addComponent(jobNoTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(searchButton)))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 41, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel8)
-                                        .addComponent(jLabel15))
-                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(workReqTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGroup(jPanel1Layout.createSequentialGroup()
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                            .addComponent(partsReqTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(jLabel15)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jLabel16)
                                         .addComponent(jLabel17)
                                         .addComponent(jLabel18))
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addGap(25, 25, 25)
                                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(costVATTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 181, Short.MAX_VALUE)
-                                        .addComponent(costTextField, javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(timeTakenTextField, javax.swing.GroupLayout.Alignment.TRAILING))))
+                                        .addComponent(costVATTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(costTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(timeTakenTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addComponent(jLabel8)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                 .addComponent(saveButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -285,70 +295,73 @@ public class JobsForm extends Form {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton1)
                             .addComponent(clearButton))
-                        .addGap(14, 14, 14)
-                        .addComponent(jLabel1)
-                        .addGap(28, 28, 28)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel2)
-                            .addComponent(jobNoTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(searchButton))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel3)
-                            .addComponent(vehicleRegTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel10)
-                            .addComponent(makeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(modelTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel11))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel4)
-                            .addComponent(customerNameBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel5)
-                            .addComponent(bookingDateTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel6)
-                            .addComponent(telNoTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jobStatusComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel12))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel13)
-                            .addComponent(mechanicComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(bayAllocationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel14)))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(14, 14, 14)
+                                .addComponent(jLabel1)
+                                .addGap(28, 28, 28)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jobNoTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(searchButton))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel3)
+                                    .addComponent(vehicleRegTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(makeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(modelTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jLabel11)))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel4)
+                                    .addComponent(customerNameBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel5)
+                                    .addComponent(bookingDateTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel6)
+                                    .addComponent(telNoTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jobStatusComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel12))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel13)
+                                    .addComponent(mechanicComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(bayAllocationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel14)))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(176, 176, 176)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(100, 100, 100)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel8)
                                 .addGap(98, 98, 98)
-                                .addComponent(jLabel15))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(workReqTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(partsReqTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(timeTakenTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel16))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(costTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel17))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(costVATTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel18))))
+                                .addComponent(jLabel15)
+                                .addGap(110, 110, 110)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(timeTakenTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel16))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(costTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel17))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(costVATTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel18))))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(createButton)
@@ -404,6 +417,9 @@ public class JobsForm extends Form {
         removeButton.setEnabled(true);
         saveButton.setEnabled(true);
         saveButton.setText("Save");
+        
+        LocalDateTime now = LocalDateTime.now();
+        bookingDateTextField.setText(now.format(DateTimeFormatter.ISO_LOCAL_DATE));
     }//GEN-LAST:event_createButtonActionPerformed
 
     private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
@@ -488,21 +504,84 @@ public class JobsForm extends Form {
     }//GEN-LAST:event_vehicleRegTextFieldActionPerformed
 
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
-        // TODO add your handling code here:
+        
+        int job_no = -1;
+        try {
+            job_no = Integer.parseInt(jobNoTextField.getText());
+            
+            if (job_no != -1){
+                if (gui.databaseHandler.checkQuery("SELECT job_no FROM job WHERE job_no=?", new ValueObject("int", job_no), "job_no")) {
+                    
+                    ValueObject job_no_VO = new ValueObject("int", job_no);
+                    
+                    String reg_no = gui.databaseHandler.executeStringQuery("SELECT reg_no FROM job WHERE job_no=?", job_no_VO, "reg_no");
+                    vehicleRegTextField.setText(reg_no);
+                    
+                    ValueObject reg = new ValueObject("String", reg_no);
+                    
+                    String make = gui.databaseHandler.executeStringQuery("SELECT make FROM vehicle WHERE reg_no=?", reg, "make");
+                    makeTextField.setText(make);
+                    
+                    String model = gui.databaseHandler.executeStringQuery("SELECT model FROM vehicle WHERE reg_no=?", reg, "model");
+                    modelTextField.setText(model);
+                    
+                    int customer_no = gui.databaseHandler.executeIntQuery("SELECT customer_no FROM vehicle WHERE reg_no=?", reg, "customer_no");
+                    ValueObject customer_no_VO = new ValueObject("int", customer_no);
+                    
+                    String customer_name = gui.databaseHandler.executeStringQuery("SELECT customer_name FROM customer WHERE customer_no=?", customer_no_VO, "customer_name");
+                    customerNameBox.setSelectedItem(customer_name);
+                    
+                    String bookingDate = gui.databaseHandler.executeDateQuery("SELECT date_booked FROM job WHERE job_no=?", job_no_VO, "date_booked");
+                    bookingDateTextField.setText(bookingDate);
+                    
+                    int tel_no = gui.databaseHandler.executeIntQuery("SELECT tel FROM customer WHERE customer_no=?", customer_no_VO, "tel");
+                    telNoTextField.setText(tel_no + "");
+                    
+                    String job_status = gui.databaseHandler.executeStringQuery("SELECT status FROM job WHERE job_no=?", job_no_VO, "status");
+                    jobStatusComboBox.setSelectedItem(job_status);
+                    
+                    int staff_no = gui.databaseHandler.executeIntQuery("SELECT staff_no FROM job WHERE job_no=?", job_no_VO, "staff_no");
+                    String mechanic_name = gui.databaseHandler.executeStringQuery("SELECT staff_name FROM staff WHERE staff_no=?", new ValueObject("int", staff_no), "staff_name");
+                    mechanicComboBox.setSelectedItem(mechanic_name);
+                    
+                    bayAllocationTextField.setText("not implemented");
+                    
+                    float cost = gui.databaseHandler.executeFloatQuery("SELECT totalamount FROM job WHERE job_no=?", job_no_VO, "totalamount");
+                    costTextField.setText(cost + "");
+                    
+                    float timeTaken = gui.databaseHandler.executeFloatQuery("SELECT estimated_time FROM job WHERE job_no=?", job_no_VO, "estimated_time");
+                    timeTakenTextField.setText(timeTaken + "");
+                    
+                    String[] tasks = gui.databaseHandler.getStringArray("SELECT task_desc FROM task WHERE job_no= " + job_no, "task_desc");
+                    workRequiredList.setListData(tasks);
+                    
+                    String[] parts = gui.databaseHandler.getStringArray("SELECT part_name FROM \n" +
+                                                                        "part INNER JOIN \n" +
+                                                                        "    task_part INNER JOIN task ON task_part.task_no = task.task_no\n" +
+                                                                        "ON part.part_no = task_part.part_no\n" +
+                                                                        "WHERE job_no = " + job_no, "part_name");
+                    
+                    partsRequiredList.setListData(parts);
+                    
+                    //reset button
+                    jobNoTextField.setEditable(false);
+                    createButton.setEnabled(false);
+                    removeButton.setEnabled(true);
+                    vatDisplay();
+                } else {
+                    gui.throwErrorForm("Job no not found in database.");
+                }
+            }
+        } catch (NumberFormatException e){
+            gui.throwErrorForm("Job no must be a number.");
+        }
         
         //enable remove
-        removeButton.setEnabled(true);
     }//GEN-LAST:event_searchButtonActionPerformed
 
     private void costTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_costTextFieldActionPerformed
         // TODO add your handling code here:
-        try {
-            double vat = Double.parseDouble(costTextField.getText());
-            vat = vat*1.17;
-            costVATTextField.setText("" + vat);
-        } catch (NumberFormatException e){
-            costVATTextField.setText("n/a");
-        }
+        vatDisplay();
     }//GEN-LAST:event_costTextFieldActionPerformed
 
     private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
@@ -518,6 +597,10 @@ public class JobsForm extends Form {
         saveButton.setText("Save");
     }//GEN-LAST:event_clearButtonActionPerformed
 
+    private void costTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_costTextFieldFocusLost
+        vatDisplay();
+    }//GEN-LAST:event_costTextFieldFocusLost
+
     private void clearAll() {
         bayAllocationTextField.setText("");
         bookingDateTextField.setText("");
@@ -527,11 +610,12 @@ public class JobsForm extends Form {
         jobNoTextField.setText("");
         makeTextField.setText("");
         modelTextField.setText("");
-        partsReqTextField.setText("");
         telNoTextField.setText("");
         timeTakenTextField.setText("");
         vehicleRegTextField.setText("");
-        workReqTextField.setText("");
+        
+        workRequiredList.setListData(new String[0]);
+        partsRequiredList.setListData(new String[0]);
         
         customerNameBox.setSelectedIndex(0);
         jobStatusComboBox.setSelectedIndex(0);
@@ -579,19 +663,21 @@ public class JobsForm extends Form {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField jobNoTextField;
     private javax.swing.JComboBox<String> jobStatusComboBox;
     private javax.swing.JTextField makeTextField;
     private javax.swing.JComboBox<String> mechanicComboBox;
     private javax.swing.JTextField modelTextField;
-    private javax.swing.JTextField partsReqTextField;
+    private javax.swing.JList<String> partsRequiredList;
     private javax.swing.JButton removeButton;
     private javax.swing.JButton saveButton;
     private javax.swing.JButton searchButton;
     private javax.swing.JTextField telNoTextField;
     private javax.swing.JTextField timeTakenTextField;
     private javax.swing.JTextField vehicleRegTextField;
-    private javax.swing.JTextField workReqTextField;
+    private javax.swing.JList<String> workRequiredList;
     // End of variables declaration//GEN-END:variables
 
     private void refreshMechanicBox() {
@@ -618,5 +704,15 @@ public class JobsForm extends Form {
         customers.forEach((u) -> {
             customerNameBox.addItem(u);
         });
+    }
+    
+    private void vatDisplay(){
+        try {
+            double vat = Double.parseDouble(costTextField.getText());
+            vat = vat*1.17;
+            costVATTextField.setText("" +  String.format("%.2f", vat));
+        } catch (NumberFormatException e){
+            costVATTextField.setText("n/a");
+        }
     }
 }

@@ -6,6 +6,10 @@
 package tft_garits.Database;
 
 import java.sql.Date;
+import java.text.DateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 /**
  *
@@ -75,13 +79,8 @@ public class ValueObject {
     public Date toDate(){
         assert(value instanceof String);
         String v = (String) value;
-        String[] split = v.split("-");
         
-        assert(split.length == 3);
-        
-        Date date = new Date(Integer.parseInt(split[0]),
-                             Integer.parseInt(split[1]),
-                             Integer.parseInt(split[2]));
+        Date date = Date.valueOf(v);
         return date;
     }
 }

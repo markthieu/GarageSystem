@@ -6,11 +6,15 @@
 package tft_garits.Database;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  *
@@ -120,7 +124,8 @@ public class DatabaseHandler {
             
             pstmt.close();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
         }
         
         return "sql error";
@@ -151,7 +156,8 @@ public class DatabaseHandler {
             
             pstmt.close();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
         }
         
         return "sql error";
@@ -172,7 +178,8 @@ public class DatabaseHandler {
             
             pstmt.close();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
         }
         
         return -1;
@@ -192,7 +199,39 @@ public class DatabaseHandler {
             
             pstmt.close();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        return -1;
+    }
+    
+    public float executeFloatQuery(String sql, ValueObject value, String search) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            //set values of ? in sql statement
+            switch(value.getType()){
+                case "String":
+                    pstmt.setString(1, value.toString());
+                    break;
+                case "int":
+                    pstmt.setInt(1, value.toInt());
+                    break;
+                case "double":
+                    pstmt.setDouble(1, value.toDouble());
+                    break;
+            }
+        
+            ResultSet rs = pstmt.executeQuery();
+            
+            //return string found
+            while (rs.next()){
+                return rs.getFloat(search);
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
         }
         
         return -1;
@@ -244,10 +283,43 @@ public class DatabaseHandler {
             
             pstmt.close();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
         }
         
         return -1;
+    }
+    
+    public String executeDateQuery(String sql, ValueObject value, String search){
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            //set values of ? in sql statement
+            switch(value.getType()){
+                case "String":
+                    pstmt.setString(1, value.toString());
+                    break;
+                case "int":
+                    pstmt.setInt(1, value.toInt());
+                    break;
+                case "double":
+                    pstmt.setDouble(1, value.toDouble());
+                    break;
+            }
+        
+            ResultSet rs = pstmt.executeQuery();
+            
+            //return string found
+            while (rs.next()){
+                LocalDateTime date = rs.getTimestamp(search).toLocalDateTime();
+                return date.format(DateTimeFormatter.ISO_LOCAL_DATE);
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        return "sql error";
     }
     
     public void createNewTable() {
@@ -306,8 +378,7 @@ public class DatabaseHandler {
         executeStatement("CREATE TABLE IF NOT EXISTS Task_Part (\n"
                             + "task_no int REFERENCES Task (task_no) ON UPDATE CASCADE ON DELETE CASCADE,\n"
                             + "part_no int REFERENCES Part (part_no) ON UPDATE CASCADE,\n"
-                            + "amount int NOT NULL DEFAULT 1,\n"
-                            + "PRIMARY KEY (task_no)\n"
+                            + "amount int NOT NULL DEFAULT 1\n"
                         + ");");
                 
         executeStatement("CREATE TABLE IF NOT EXISTS Vehicle (\n"
@@ -379,7 +450,8 @@ public class DatabaseHandler {
             
             System.out.println("INSERT " + user_name + " into login.");
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
         }
         
         //prevents admin being added to staff table
@@ -401,7 +473,8 @@ public class DatabaseHandler {
                 
                 System.out.println("INSERT " + full_name + " into staff.");
             } catch (SQLException e) {
-                System.out.println(e.getMessage());
+                System.out.println(e.getMessage());           
+                System.out.println(sql);
             }
         }
     }
@@ -422,7 +495,7 @@ public class DatabaseHandler {
             
             pstmt.close();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println(e.getMessage());            System.out.println(sql);
         }
         
         return false;
@@ -500,7 +573,8 @@ public class DatabaseHandler {
             
             pstmt.close();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
         }
         
         assert(ids.size() > 0);
@@ -519,7 +593,8 @@ public class DatabaseHandler {
             
             pstmt.close();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
         }
         
         assert(names.size() > 0);
@@ -547,6 +622,71 @@ public class DatabaseHandler {
         }
         
         return -1;
+    }
+
+    public HashMap<Integer, String> getIntStringDict(String table, String intColumn, String stringColumn, ValueObject condition) {
+        HashMap<Integer, String> dict = new HashMap<>();
+        
+        String sql = "SELECT * FROM ? WHERE ?";
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            
+            pstmt.setString(1, table);
+            pstmt.setString(2, condition.toString());
+            
+            ResultSet rs = pstmt.executeQuery();
+            
+            while(rs.next()){
+                dict.put(rs.getInt(intColumn), rs.getString(stringColumn));
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        return dict;
+    }
+
+    public Integer[] getIntArray(String sql, String search) {
+        ArrayList<Integer> ints = new ArrayList<>();
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            ResultSet rs = pstmt.executeQuery();
+            
+            while(rs.next()){
+                ints.add(rs.getInt(search));
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        assert(ints.size() > 0);
+        Integer[] type = new Integer[ints.size()];
+        return ints.toArray(type);
+    }
+
+    public String[] getStringArray(String sql, String search) {
+        ArrayList<String> strings = new ArrayList<>();
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            ResultSet rs = pstmt.executeQuery();
+            
+            while(rs.next()){
+                strings.add(rs.getString(search));
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        assert(strings.size() > 0);
+        String[] type = new String[strings.size()];
+        return strings.toArray(type);
     }
 
     

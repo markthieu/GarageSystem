@@ -7,6 +7,7 @@ package tft_garits.GUI;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import tft_garits.Database.ValueObject;
 
 /**
@@ -14,7 +15,9 @@ import tft_garits.Database.ValueObject;
  * @author George Kemp
  */
 public class TaskForm extends Form {
-
+    
+    Integer[] task_nos;
+    String[] task_descs;
     /**
      * Creates new form CustomerForm
      */
@@ -182,12 +185,11 @@ public class TaskForm extends Form {
 
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
         ArrayList<ValueObject> values = new ArrayList<>();
-        String sql = "INSERT INTO task (job_no, task_desc, part_no)"
-                   + "Values (?,?,?);";
+        String sql = "INSERT INTO task (job_no, task_desc)"
+                   + "Values (?,?);";
         
         values.add(new ValueObject("int", Integer.parseInt((String) jobNoComboBox.getSelectedItem()))); //job no
         values.add(new ValueObject("String", taskEntryField.getText())); //task desc
-        values.add(new ValueObject("int", -1)); //part no
         
         gui.databaseHandler.executeArrayInsert(sql, values);
         
@@ -201,15 +203,51 @@ public class TaskForm extends Form {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
-        // TODO add your handling code here:
+        
+        List<String> selections = taskList.getSelectedValuesList();
+        ArrayList<Integer> toRemove = new ArrayList<>();
+        
+        if (!selections.isEmpty()){
+            selections.forEach((task_desc) -> {
+                int index = 0;
+                for (int i = 0; i < task_descs.length; i++){
+                    if (task_desc.equals(task_descs[i])){
+                        index = i;
+                        break;
+                    }
+                }
+                int task_no = task_nos[index];
+                toRemove.add(task_no);
+            });
+        }
+        
+        toRemove.stream().filter((i) -> (i != null)).forEachOrdered((i) -> {
+            gui.databaseHandler.executeStatement("DELETE FROM task WHERE task_no='" + i + "'");
+        });
+        
+        refreshList();
     }//GEN-LAST:event_removeButtonActionPerformed
 
     private void jobNoComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jobNoComboBoxActionPerformed
-        // TODO add your handling code here:
+        refreshList();
     }//GEN-LAST:event_jobNoComboBoxActionPerformed
 
     private void partsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_partsButtonActionPerformed
-        // TODO add your handling code here:
+        
+        List<String> selections = taskList.getSelectedValuesList();
+        if (!selections.isEmpty()){
+            selections.forEach((task_desc) -> {
+                int index = 0;
+                for (int i = 0; i < task_descs.length; i++){
+                    if (task_desc.equals(task_descs[i])){
+                        index = i;
+                        break;
+                    }
+                }
+                int task_no = task_nos[index];
+                gui.showForm(new SetPartsForm(gui, task_desc, task_no));
+            });
+        }
     }//GEN-LAST:event_partsButtonActionPerformed
 
     /**
@@ -233,9 +271,15 @@ public class TaskForm extends Form {
     // End of variables declaration//GEN-END:variables
 
     private void refreshList() {
-        ArrayList<String> descriptions = gui.databaseHandler.getNameArray("SELECT task_desc FROM task;", "task_desc");
-        String[] data = new String[descriptions.size()];
-        data = descriptions.toArray(data);
-        taskList.setListData(data);
+        if (jobNoComboBox.getSelectedIndex() != 0){
+            int job_no = Integer.parseInt((String) jobNoComboBox.getSelectedItem());
+
+            task_nos = gui.databaseHandler.getIntArray("SELECT task_no FROM task WHERE job_no=" + job_no, "task_no");
+            task_descs = gui.databaseHandler.getStringArray("SELECT task_desc FROM task WHERE job_no=" + job_no, "task_desc");
+
+            assert(task_nos.length == task_descs.length);
+
+            taskList.setListData(task_descs);
+        }
     }
 }

@@ -7,7 +7,6 @@ package tft_garits.GUI;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import tft_garits.Account.User;
 import tft_garits.Database.ValueObject;
 
 /**
@@ -215,11 +214,11 @@ public class EditPartForm extends Form {
                     int amount = Integer.parseInt(stockAmountField.getText());
                     int threshold = Integer.parseInt(thresholdField.getText());
 
-                    String sql =  "UPDATE part"
-                                + "SET description =?,"
-                                + "SET price =?,"
-                                + "SET stock_amount =?,"
-                                + "SET threshold =?,"
+                    String sql =  "UPDATE part "
+                                + "SET description =?, "
+                                + "price =?, "
+                                + "stock_amount =?, "
+                                + "threshold =? "
                                 + "WHERE part_name=?;";
 
                     ArrayList<ValueObject> values = new ArrayList<>();
