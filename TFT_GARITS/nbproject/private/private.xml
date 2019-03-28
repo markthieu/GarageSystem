@@ -3,11 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/gregclemp/Documents/tft-garits/TFT_GARITS/src/tft_garits/GUI/StockMenu.java</file>
+            <file>file:/Users/gregclemp/Documents/tft-garits/TFT_GARITS/src/tft_garits/GUI/JobsForm.java</file>
+            <file>file:/Users/gregclemp/Documents/tft-garits/TFT_GARITS/src/tft_garits/Database/ValueObject.java</file>
             <file>file:/Users/gregclemp/Documents/tft-garits/TFT_GARITS/src/tft_garits/GUI/TaskForm.java</file>
-            <file>file:/Users/gregclemp/Documents/tft-garits/TFT_GARITS/src/tft_garits/GUI/GUI.java</file>
-            <file>file:/Users/gregclemp/Documents/tft-garits/TFT_GARITS/src/tft_garits/GUI/SetPartsForm.java</file>
-            <file>file:/Users/gregclemp/Documents/tft-garits/TFT_GARITS/src/tft_garits/GUI/StockForm.java</file>
+            <file>file:/Users/gregclemp/Documents/tft-garits/TFT_GARITS/src/tft_garits/Stock/Part.java</file>
             <file>file:/Users/gregclemp/Documents/tft-garits/TFT_GARITS/src/tft_garits/GUI/GARITS.java</file>
             <file>file:/Users/gregclemp/Documents/tft-garits/TFT_GARITS/src/tft_garits/Database/DatabaseHandler.java</file>
         </group>
