@@ -27,10 +27,10 @@ public class Controller {
      * @param tasks
      * @param dateBooked
      */ 
-    public Job createJob(Time estimatedTime, String tasks, Date dateBooked) {
-        // TODO - implement controller.createJob
-        throw new UnsupportedOperationException();
-    } 
+//    public Job createJob(Time estimatedTime, String tasks, Date dateBooked) {
+//        // TODO - implement controller.createJob
+//        throw new UnsupportedOperationException();
+//    } 
 
     /**
      * 
@@ -115,15 +115,15 @@ public class Controller {
         throw new UnsupportedOperationException();
     }
 
-    public StockReport generateStockReport() {
-        // TODO - implement controller.generateStockReport
-        throw new UnsupportedOperationException();
-    }
-
-    public JobReport generateJobReport() {
-        // TODO - implement controller.generateJobReport
-        throw new UnsupportedOperationException();
-    }
+//    public StockReport generateStockReport() {
+//        // TODO - implement controller.generateStockReport
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    public JobReport generateJobReport() {
+//        // TODO - implement controller.generateJobReport
+//        throw new UnsupportedOperationException();
+//    }
 
     public void generateBookingReport() {
         // TODO - implement controller.generateBookingReport
@@ -135,25 +135,25 @@ public class Controller {
         throw new UnsupportedOperationException();
     }
 
-    public Job addJob() {
-        // TODO - implement controller.addJob
-        throw new UnsupportedOperationException();
-    }
-
-    public TaskForm addTask() {
-        // TODO - implement controller.addTask
-        throw new UnsupportedOperationException();
-    }
+//    public Job addJob() {
+//        // TODO - implement controller.addJob
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    public TaskForm addTask() {
+//        // TODO - implement controller.addTask
+//        throw new UnsupportedOperationException();
+//    }
 
     public void checkProgress() {
         // TODO - implement controller.checkProgress
         throw new UnsupportedOperationException();
     }
 
-    public TaskForm selectTask() {
-        // TODO - implement controller.selectTask
-        throw new UnsupportedOperationException();
-    }
+//    public TaskForm selectTask() {
+//        // TODO - implement controller.selectTask
+//        throw new UnsupportedOperationException();
+//    }
 
     public void addPart() {
         // TODO - implement controller.addPart

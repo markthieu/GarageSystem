@@ -28,14 +28,20 @@ public class GARITS { //GUI handler & main class
         DatabaseHandler databaseHandler = new DatabaseHandler(connectionHandler.connect(), url);
         
         //creates account table and initialises with admin account
-        databaseHandler.createNewTable();
-        databaseHandler.insertUser("admin", "tft", "Admin", null);
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new GUI(databaseHandler).run("LOGIN");
-            }
-        });
+        try {
+            databaseHandler.createNewTable();
+            databaseHandler.insertUser("admin", "tft", "Admin", null);
+            
+            /* Create and display the form */
+            java.awt.EventQueue.invokeLater(new Runnable() {
+                public void run() {
+                    new GUI(databaseHandler).run("LOGIN");
+                }
+            });
+        } catch (NullPointerException e){
+            ErrorNotification form = new ErrorNotification("Cannot connect to server.");
+            form.setLocationRelativeTo(null); //centres the window on the screen
+            form.setVisible(true);
+        }
     }
 }
