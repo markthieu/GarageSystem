@@ -442,18 +442,21 @@ public class JobsForm extends Form {
 
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
         // save changes to database
-        if (someFieldsEmpty()){
-            gui.throwErrorForm("Not all fields complete.");
-        } else {
+        if (checkValid()) {
             int jobID = Integer.parseInt(jobNoTextField.getText());
             
             int customerID = gui.databaseHandler.executeIntQuery("SELECT customer_no FROM customer WHERE customer_name=?", 
                                                                customerNameBox.getSelectedItem().toString(), 
                                                               "customer_no");
             
-            int staffID = gui.databaseHandler.executeIntQuery("SELECT staff_no FROM staff WHERE staff_name=?", 
+            Integer staffID;
+            if (mechanicComboBox.getSelectedItem() == null){
+                staffID = null;
+            } else {
+                staffID = gui.databaseHandler.executeIntQuery("SELECT staff_no FROM staff WHERE staff_name=?", 
                                                                mechanicComboBox.getSelectedItem().toString(), 
                                                               "staff_no");
+            }
             
             String reg_no = vehicleRegTextField.getText();
             
@@ -461,29 +464,42 @@ public class JobsForm extends Form {
             
             ArrayList<ValueObject> values = new ArrayList<>();
             //insert vehicle
-            gui.databaseHandler.executeStatement("DELETE FROM vehicle WHERE reg_no='" + reg_no + "'");
+            //gui.databaseHandler.executeStatement("DELETE FROM vehicle WHERE reg_no='" + reg_no + "'");
             String sql = "INSERT INTO vehicle "
-                + "(reg_no, customer_no, make, model)"
-                + "values (?, ?, ?, ?);";
+                       + "(reg_no, customer_no, make, model) "
+                       + "values (?, ?, ?, ?) "
+                       + "ON CONFLICT (reg_no) DO "
+                       + "UPDATE SET make = ?, model = ?;";
             
             values.add(new ValueObject("String", reg_no)); //add reg_no
             values.add(new ValueObject("int", customerID)); //add customer_no
             values.add(new ValueObject("String", makeTextField.getText())); //add make
             values.add(new ValueObject("String", modelTextField.getText())); //add model
+            values.add(new ValueObject("String", makeTextField.getText())); //add make again
+            values.add(new ValueObject("String", modelTextField.getText())); //add model again
             
             gui.databaseHandler.executeArrayInsert(sql, values);
             
             
             //insert job
-            gui.databaseHandler.executeStatement("DELETE FROM job WHERE job_no='" + jobID + "'");
             sql = "INSERT INTO job "
                     + "(job_no, customer_no, status, date_booked, reg_no, staff_no, totalamount, estimated_time, completion_date)"
-                    + "values (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+                    + "values (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                    + "ON CONFLICT (job_no) DO "
+                    + "UPDATE SET status = ?, date_booked = ?, reg_no = ?, staff_no = ?, totalamount = ?, estimated_time = ?, completion_date = ?;";
             
             values.clear();
             
             values.add(new ValueObject("int", jobID)); //add job_no
             values.add(new ValueObject("int", customerID)); //add customer_no
+            values.add(new ValueObject("String", jobStatusComboBox.getSelectedItem().toString())); //add status
+            values.add(new ValueObject("date", bookingDateTextField.getText())); //add date_booked
+            values.add(new ValueObject("String", reg_no)); //add reg_no
+            values.add(new ValueObject("int", staffID)); //add staff_no
+            values.add(new ValueObject("float", costTextField.getText())); //add totalamount
+            values.add(new ValueObject("float", -1f)); //add estimated_time
+            values.add(new ValueObject("date", bookingDateTextField.getText())); //add completion_date
+            
             values.add(new ValueObject("String", jobStatusComboBox.getSelectedItem().toString())); //add status
             values.add(new ValueObject("date", bookingDateTextField.getText())); //add date_booked
             values.add(new ValueObject("String", reg_no)); //add reg_no
@@ -555,11 +571,7 @@ public class JobsForm extends Form {
                     String[] tasks = gui.databaseHandler.getStringArray("SELECT task_desc FROM task WHERE job_no= " + job_no, "task_desc");
                     workRequiredList.setListData(tasks);
                     
-                    String[] parts = gui.databaseHandler.getStringArray("SELECT part_name FROM \n" +
-                                                                        "part INNER JOIN \n" +
-                                                                        "    task_part INNER JOIN task ON task_part.task_no = task.task_no\n" +
-                                                                        "ON part.part_no = task_part.part_no\n" +
-                                                                        "WHERE job_no = " + job_no, "part_name");
+                    String[] parts = gui.databaseHandler.getPartsForJob(job_no);
                     
                     partsRequiredList.setListData(parts);
                     
@@ -714,5 +726,22 @@ public class JobsForm extends Form {
         } catch (NumberFormatException e){
             costVATTextField.setText("n/a");
         }
+    }
+
+    private boolean checkValid() {
+        String reg_no = vehicleRegTextField.getText();
+        String customer_name = "";
+        if (customerNameBox.getSelectedItem() != null){
+            customer_name = customerNameBox.getSelectedItem().toString();
+        } 
+        
+        if (someFieldsEmpty()){
+            gui.throwErrorForm("Not all fields complete.");
+            return false;
+        } else if (!gui.databaseHandler.checkReg(reg_no, customer_name)){
+            gui.throwErrorForm("Vehicle " + reg_no + " belongs to another customer.");
+            return false;
+        }
+        return true;
     }
 }

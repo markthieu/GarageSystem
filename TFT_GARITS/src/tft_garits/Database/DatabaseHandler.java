@@ -82,23 +82,7 @@ public class DatabaseHandler {
             //set values of ? in sql statement
             for (int i = 0; i < values.size(); i++){
                 ValueObject v = values.get(i);
-                switch(v.getType()){
-                    case "String":
-                        pstmt.setString(i+1, v.toString());
-                        break;
-                    case "int":
-                        pstmt.setInt(i+1, v.toInt());
-                        break;
-                    case "double":
-                        pstmt.setDouble(i+1, v.toDouble());
-                        break;
-                    case "date":
-                        pstmt.setDate(i+1, v.toDate());
-                        break;
-                    case "float":
-                        pstmt.setFloat(i+1, v.toFloat());
-                        break;
-                }
+                v.set(pstmt, i+1);
             }
             pstmt.execute();
             pstmt.close();
@@ -343,7 +327,7 @@ public class DatabaseHandler {
                             + "status varchar NOT NULL default 'Pending',\n"
                             + "date_booked DATE NOT NULL,\n"
                             + "reg_no varchar NOT NULL,\n"
-                            + "staff_no int NOT NULL,\n"
+                            + "staff_no int,\n"
                             + "totalAmount FLOAT NOT NULL,\n"
                             + "estimated_time FLOAT NOT NULL,\n"
                             + "completion_date DATE,\n"
@@ -676,6 +660,156 @@ public class DatabaseHandler {
             
             while(rs.next()){
                 strings.add(rs.getString(search));
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        assert(strings.size() > 0);
+        String[] type = new String[strings.size()];
+        return strings.toArray(type);
+    }
+
+    public String[] getPartDetails(int task_no) {
+        String sql = "SELECT * FROM task_part INNER JOIN part ON task_part.part_no = part.part_no WHERE task_no=? ORDER BY task_part.part_no ASC";
+        ArrayList<String> strings = new ArrayList<>();
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setInt(1, task_no);
+            ResultSet rs = pstmt.executeQuery();
+            
+            while(rs.next()){
+                String detail = rs.getString("part_name");
+                detail = detail + ", " + rs.getInt("amount");
+                strings.add(detail);
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        assert(strings.size() > 0);
+        String[] type = new String[strings.size()];
+        return strings.toArray(type);
+    }
+
+    public String[] getPartsForJob(int job_no) {
+        String sql = "SELECT * FROM task_part INNER JOIN part " 
+                +    "ON task_part.part_no = part.part_no "
+                +    "WHERE task_no IN (SELECT task_no FROM task WHERE job_no=?) "
+                +    "ORDER BY task_part.part_no ASC";
+        ArrayList<String> strings = new ArrayList<>();
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setInt(1, job_no);
+            ResultSet rs = pstmt.executeQuery();
+            
+            while(rs.next()){
+                String detail = rs.getString("part_name");
+                detail = detail + ", " + rs.getInt("amount");
+                strings.add(detail);
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        assert(strings.size() > 0);
+        String[] type = new String[strings.size()];
+        return strings.toArray(type);
+    }
+
+    public Object[][] getJobDetails(String condition1, String condition2) {
+        String sql = "SELECT * FROM job LEFT JOIN staff ON job.staff_no = staff.staff_no WHERE " + condition1 + condition2;
+        ArrayList<Object[]> output = new ArrayList<>();
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            ResultSet rs = pstmt.executeQuery();
+            
+            while(rs.next()){
+                Object[] out = new Object[5];
+                out[0] = rs.getInt("job_no");
+                out[1] = rs.getString("reg_no");
+                out[2] = 0 == rs.getInt("staff_no") ? null : rs.getInt("staff_no");
+                out[3] = rs.getString("staff_name");
+                out[4] = rs.getString("status");
+                output.add(out);
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        Object[][] out = new Object[output.size()][];
+        out = output.toArray(out);
+        return out;
+    }
+
+    public boolean checkReg(String reg_no, String customer_name) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM vehicle WHERE reg_no=?)";
+        
+        //check if reg doesnt exist
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setString(1, reg_no);
+            ResultSet rs = pstmt.executeQuery();
+            
+            while(rs.next()){
+                //returns true if reg not found
+                boolean b = !rs.getBoolean(1);
+                if (b){
+                    System.out.println("reg not found");
+                    return b;
+                }
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        //check if reg has correct customer
+        sql = "SELECT customer_name FROM customer FULL JOIN vehicle ON customer.customer_no = vehicle.customer_no WHERE reg_no = ?";
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setString(1, reg_no);
+            ResultSet rs = pstmt.executeQuery();
+            
+            while(rs.next()){
+                //returns true if customer_name matches
+                boolean b = customer_name.equals(rs.getString("customer_name"));
+                if (b){
+                    System.out.println("reg_no matches customer_name");
+                    return b;
+                }
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        return false;
+    }
+
+    public String[] getVehicleDetails(int customer_ID) {
+        String sql = "SELECT * FROM vehicle WHERE customer_no=?";
+        ArrayList<String> strings = new ArrayList<>();
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setInt(1, customer_ID);
+            ResultSet rs = pstmt.executeQuery();
+            
+            while(rs.next()){
+                String detail = rs.getString("reg_no");
+                detail = detail + ": " + rs.getString("make") + " " + rs.getString("model");
+                strings.add(detail);
             }
             
             pstmt.close();

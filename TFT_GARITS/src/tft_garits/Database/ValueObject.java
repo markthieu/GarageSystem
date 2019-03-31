@@ -6,6 +6,10 @@
 package tft_garits.Database;
 
 import java.sql.Date;
+import java.sql.JDBCType;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.SQLType;
 import java.text.DateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -37,7 +41,11 @@ public class ValueObject {
         return (String) value;
     }
 
-    public int toInt() {
+    public Integer toInt() {
+        if (value == null){
+            return null;
+        }
+        
         if (value instanceof String){
             try {
                 return Integer.parseInt((String) value);
@@ -82,5 +90,45 @@ public class ValueObject {
         
         Date date = Date.valueOf(v);
         return date;
+    }
+    
+    public void set(PreparedStatement pstmt, int index) throws SQLException{
+        if (value == null){
+            switch(type){
+                case "String":
+                    pstmt.setNull(index, java.sql.Types.VARCHAR);
+                    break;
+                case "int":
+                    pstmt.setNull(index, java.sql.Types.BIGINT);
+                    break;
+                case "double":
+                    pstmt.setNull(index, java.sql.Types.DOUBLE);
+                    break;
+                case "date":
+                    pstmt.setNull(index, java.sql.Types.DATE);
+                    break;
+                case "float":
+                    pstmt.setNull(index, java.sql.Types.FLOAT);
+                    break;
+            }
+        } else {
+            switch(type){
+                case "String":
+                    pstmt.setString(index, toString());
+                    break;
+                case "int":
+                    pstmt.setInt(index, toInt());
+                    break;
+                case "double":
+                    pstmt.setDouble(index, toDouble());
+                    break;
+                case "date":
+                    pstmt.setDate(index, toDate());
+                    break;
+                case "float":
+                    pstmt.setFloat(index, toFloat());
+                    break;
+            }
+        }
     }
 }

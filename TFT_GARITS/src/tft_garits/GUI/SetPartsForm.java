@@ -20,7 +20,7 @@ public class SetPartsForm extends Form {
     String[] part_descs;
     Integer[] part_nos;
     
-    String[] selected_part_descs;
+    String[] selected_part_names;
     Integer[] selected_part_nos;
     /**
      * Creates new form SetPartsForm
@@ -178,21 +178,17 @@ public class SetPartsForm extends Form {
     }// </editor-fold>//GEN-END:initComponents
 
     private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
-        List<String> selections = partsList.getSelectedValuesList();
-        if (!selections.isEmpty()){
-            selections.forEach((description) -> {
-                int index = 0;
-                for (int i = 0; i < part_descs.length; i++){
-                    if (description.equals(part_descs[i])){
-                        index = i;
-                        break;
-                    }
-                }
-                int part_no = part_nos[index];
-                gui.databaseHandler.executeStatement("DELETE FROM task_part WHERE ( task_no = " + task_no + " AND part_no = " + part_no + ");");
-            });
+        //List<String> selections = partsList.getSelectedValuesList();
+        int[] indexes = selectedList.getSelectedIndices();
+        if (indexes.length != 0){
+            for (int i = 0; i < indexes.length; i++){
+                int part_no = selected_part_nos[indexes[i]];
+                System.out.println(part_no + ": " + indexes[i] + ", " + i);
+                gui.databaseHandler.executeStatement("UPDATE task_part SET amount=amount-1 WHERE ( task_no = " + task_no + " AND part_no = " + part_no + ")");
+            }
         }
         
+        gui.databaseHandler.executeStatement("DELETE FROM task_part WHERE (amount < 1);");
         updateSelectedList();
     }//GEN-LAST:event_removeButtonActionPerformed
 
@@ -208,8 +204,27 @@ public class SetPartsForm extends Form {
                     }
                 }
                 int part_no = part_nos[index];
-                gui.databaseHandler.executeStatement("INSERT INTO task_part (task_no, part_no)"
-                        +                            "Values(" + task_no + ", " + part_no + ");");
+                String sql = "" +
+                "WITH upsert AS ( " +
+                "UPDATE task_part SET amount=amount+1 " +
+                "WHERE task_no=? AND part_no=? " +
+                "RETURNING * " +
+                ") " +
+                "INSERT INTO task_part (task_no, part_no) " +
+                "SELECT ?, ? " +
+                "WHERE NOT EXISTS (SELECT * FROM upsert);";
+                
+                ArrayList<ValueObject> values = new ArrayList<>();
+                
+                ValueObject taskO = new ValueObject("int", task_no);
+                ValueObject partO = new ValueObject("int", part_no);
+                
+                values.add(taskO);
+                values.add(partO);
+                values.add(taskO);
+                values.add(partO);
+                
+                gui.databaseHandler.executeArrayInsert(sql, values);
             });
         }
         
@@ -237,29 +252,32 @@ public class SetPartsForm extends Form {
     // End of variables declaration//GEN-END:variables
 
     private void updatePartsList() {
-        part_nos = gui.databaseHandler.getIntArray("SELECT part_no FROM part", "part_no");
-        part_descs = gui.databaseHandler.getStringArray("SELECT description FROM part", "description");
-        
-        assert(part_nos.length == part_descs.length);
+        part_nos = gui.databaseHandler.getIntArray("SELECT part_no FROM part ORDER BY part_no", "part_no");
+        part_descs = gui.databaseHandler.getStringArray("SELECT part_name FROM part ORDER BY part_no", "part_name");
 
         partsList.setListData(part_descs);
     }
 
     private void updateSelectedList() {
-        selected_part_nos = gui.databaseHandler.getIntArray("SELECT part_no FROM task_part WHERE task_no=" + task_no, "part_no");
-        selected_part_descs = new String[selected_part_nos.length];
+        selected_part_nos = gui.databaseHandler.getIntArray("SELECT part_no FROM task_part WHERE task_no=" + task_no + "  ORDER BY part_no", "part_no");
+        selected_part_names = gui.databaseHandler.getPartDetails(task_no);
         
+        /*
         for (int i = 0; i < selected_part_nos.length; i++){
             if (selected_part_nos[i] != null){
-                selected_part_descs[i] = gui.databaseHandler.executeStringQuery("SELECT description FROM part WHERE part_no=?", 
-                                                                                new ValueObject("int", selected_part_nos[i]), "description");
+                selected_part_names[i] = gui.databaseHandler.executeStringQuery("SELECT part_name FROM part WHERE part_no=?", 
+                                                                                new ValueObject("int", selected_part_nos[i]), "part_name");
             } else {
-                selected_part_descs[i] = "NO PART DESCRIPTION";
+                selected_part_names[i] = "NO PART NAME";
             }
-        }
+        }*/
         
-        assert(selected_part_nos.length == selected_part_descs.length);
+        for (int i : selected_part_nos){
+            System.out.print(i + " ");
+        }
+        System.out.print("\n");
+        //System.out.println(selected_part_nos.length + " == " + selected_part_names.length);
 
-        selectedList.setListData(selected_part_descs);
+        selectedList.setListData(selected_part_names);
     }
 }
