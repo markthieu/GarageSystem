@@ -1,61 +1,69 @@
 package tft_garits.Stock;
 
 public class Stock {
+        
+    private final int part_no;
+    private final String part_name;
+    private final String part_desc;
+    private int amount;
+    private final float cost;
+    private float total;
 
-	private int stockId;
+    public Stock(int part_no, String part_name, String part_desc, float cost) {
+        this.part_no = part_no;
+        this.part_name = part_name;
+        this.part_desc = part_desc;
+        this.cost = cost;
+        this.amount = 1;
+        calcTotal();
+    }
+    
+    public void add(int inc){
+        amount = amount + inc;
+        calcTotal();
+    }
+    
+    public void add(){
+        amount = amount + 1;
+        calcTotal();
+    }
+    
+    public void sub(){
+        amount = amount - 1;
+        calcTotal();
+    }
+    
+    private void calcTotal(){
+        total = cost*amount;
+    }
+    
+    @Override
+    public String toString(){
+        if (amount == 1) return part_name + ", £" + cost;
+        return part_name + ", " + amount + " x £" + cost;
+    }
 
-	/**
-	 * 
-	 * @param partId
-	 */
-	public void addPart(int partId) {
-		// TODO - implement Stock.addPart
-		throw new UnsupportedOperationException("Stock.addPart() needs implementation");
-	}
+    public float getTotal() {
+        return total;
+    }
+    
+    public int getNo(){
+        return part_no;
+    }
+    
+    public int getAmount(){
+        return amount;
+    }
 
-	/**
-	 * 
-	 * @param partId
-	 */
-	public Part removePart(int partId) {
-		// TODO - implement Stock.removePart
-		throw new UnsupportedOperationException("Stock.removePart() needs implementation");
-	}
+    public String getName() {
+        return part_name;
+    }
+    
+    public String getDesc() {
+        return part_desc;
+    }
 
-	/**
-	 * 
-	 * @param partId
-	 * @param qty
-	 */
-	public void orderPart(int partId, int qty) {
-		// TODO - implement Stock.orderPart
-		throw new UnsupportedOperationException("Stock.orderPart() needs implementation");
-	}
-
-	/**
-	 * 
-	 * @param partId
-	 */
-	public void searchPart(String partId) {
-		// TODO - implement Stock.searchPart
-		throw new UnsupportedOperationException("Stock.searchPart() needs implementation");
-	}
-
-	public static Stock Stock() {
-		// TODO - implement Stock.Stock
-		throw new UnsupportedOperationException("Stock.Stock() needs implementation");
-	}
-
-	public int getStockId() {
-		return this.stockId;
-	}
-
-	/**
-	 * 
-	 * @param stockId
-	 */
-	public void setStockId(int stockId) {
-		this.stockId = stockId;
-	}
-
+    public float getCost() {
+        return cost;
+    }
 }

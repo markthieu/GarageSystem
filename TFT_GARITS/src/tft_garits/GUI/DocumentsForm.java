@@ -5,6 +5,10 @@
  */
 package tft_garits.GUI;
 
+import tft_garits.Database.ValueObject;
+import tft_garits.Documents.InvoiceReminderPrinter;
+import tft_garits.Documents.Printer;
+
 /**
  *
  * @author George Kemp
@@ -127,6 +131,7 @@ public class DocumentsForm extends Form {
                 break;
                 
             case "Payment Reminders":
+                printReminders();
                 PaymentReminderForm form1 = new PaymentReminderForm(gui);
                 form1.setLocationRelativeTo(null); //centres the window on the screen
                 form1.setVisible(true);
@@ -158,4 +163,17 @@ public class DocumentsForm extends Form {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
+
+    private void printReminders() {
+        Integer[] job_nos = gui.databaseHandler.getIntArray("SELECT job_no FROM job", "job_no");
+        for (Integer i : job_nos){
+            ValueObject no = new ValueObject("int", i);
+            String name = gui.databaseHandler.executeStringQuery("SELECT customer_name, job_no FROM customer INNER JOIN job ON customer.customer_no = job.customer_no WHERE job_no = ?", no, "customer_name");
+            String[] address = gui.databaseHandler.getCustomerAddress(no, "job_no");
+            String reg_no = gui.databaseHandler.executeStringQuery("SELECT reg_no FROM job WHERE job_no = ?", no, "reg_no");
+            float amount = gui.databaseHandler.executeFloatQuery("SELECT totalamount FROM job WHERE job_no = ?", no, "totalamount");
+            Printer printer = new InvoiceReminderPrinter(name, address, reg_no, amount);
+            printer.print();
+        }
+    }
 }

@@ -823,5 +823,39 @@ public class DatabaseHandler {
         return strings.toArray(type);
     }
 
+    public String[] getCustomerAddress(ValueObject value, String valueColumn) {
+        String sql = "";
+        if (valueColumn.equals("job_no")) sql = "SELECT address, post_code FROM customer INNER JOIN job ON customer.customer_no = job.customer_no WHERE job_no = ?";
+        if (valueColumn.equals("customer_no")) sql = "SELECT address, post_code FROM customer WHERE customer_no = ?";
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            value.set(pstmt, 1);
+            ResultSet rs = pstmt.executeQuery();
+            
+            while(rs.next()){
+                String address = rs.getString("address");
+                String post_code = rs.getString("post_code");
+                String[] output = address.split(", ");
+                
+                for (int i = 0; i < output.length; i++){
+                    if (i < output.length-1){
+                        output[i] = output[i] + ", ";
+                    } else {
+                        output[i] = output[i] + " " + post_code;
+                    }
+                }
+                
+                return output;
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        return null;
+    }
+
     
 }
