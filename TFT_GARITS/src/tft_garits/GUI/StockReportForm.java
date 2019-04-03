@@ -5,12 +5,22 @@
  */
 package tft_garits.GUI;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import javax.swing.SpinnerDateModel;
+import javax.swing.table.DefaultTableModel;
+import tft_garits.Documents.Printer;
+import tft_garits.Documents.StockReportPrinter;
+
 /**
  *
  * @author George Kemp
  */
 public class StockReportForm extends Form {
-
+    
+    Object[][] data;
+    LocalDateTime ldtFrom;
+    LocalDateTime ldtTo;
     /**
      * Creates new form CustomerForm
      */
@@ -32,12 +42,14 @@ public class StockReportForm extends Form {
         jButton1 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jSpinner1 = new javax.swing.JSpinner();
-        jButton6 = new javax.swing.JButton();
-        jButton7 = new javax.swing.JButton();
-        jButton8 = new javax.swing.JButton();
+        fromSpinner = new javax.swing.JSpinner();
+        searchButton = new javax.swing.JButton();
+        printAllButton = new javax.swing.JButton();
+        printSelButton = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        table = new javax.swing.JTable();
+        toSpinner = new javax.swing.JSpinner();
+        jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -52,52 +64,62 @@ public class StockReportForm extends Form {
 
         jLabel2.setText("Date:");
 
-        jButton6.setText("Search");
+        fromSpinner.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, null, java.util.Calendar.MONTH));
 
-        jButton7.setText("Print All");
-        jButton7.addActionListener(new java.awt.event.ActionListener() {
+        searchButton.setText("Search");
+        searchButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton7ActionPerformed(evt);
+                searchButtonActionPerformed(evt);
             }
         });
 
-        jButton8.setText("Print Selected");
+        printAllButton.setText("Print All");
+        printAllButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                printAllButtonActionPerformed(evt);
+            }
+        });
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        printSelButton.setText("Print Selected");
+        printSelButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                printSelButtonActionPerformed(evt);
+            }
+        });
+
+        table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null, null, null}
+
             },
             new String [] {
-                "Part Name", "Code", "Manufacturer", "Vehicle Type", "Year(s)", "Price", "Initial Stock Level", "Initial Cost", "Used", "Delivery", "New Stock Level", "Stock Cost", "Threshold"
+                "Part Name", "Description", "Price", "Initial Stock Level", "Initial Cost", "Used", "Delivery", "New Stock Level", "Stock Cost", "Threshold"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane2.setViewportView(jTable1);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setResizable(false);
-            jTable1.getColumnModel().getColumn(1).setResizable(false);
-            jTable1.getColumnModel().getColumn(2).setResizable(false);
-            jTable1.getColumnModel().getColumn(3).setResizable(false);
-            jTable1.getColumnModel().getColumn(4).setResizable(false);
-            jTable1.getColumnModel().getColumn(5).setResizable(false);
-            jTable1.getColumnModel().getColumn(6).setResizable(false);
-            jTable1.getColumnModel().getColumn(7).setResizable(false);
-            jTable1.getColumnModel().getColumn(8).setResizable(false);
-            jTable1.getColumnModel().getColumn(9).setResizable(false);
-            jTable1.getColumnModel().getColumn(10).setResizable(false);
-            jTable1.getColumnModel().getColumn(11).setResizable(false);
-            jTable1.getColumnModel().getColumn(12).setResizable(false);
+        jScrollPane2.setViewportView(table);
+        if (table.getColumnModel().getColumnCount() > 0) {
+            table.getColumnModel().getColumn(0).setResizable(false);
+            table.getColumnModel().getColumn(1).setResizable(false);
+            table.getColumnModel().getColumn(2).setResizable(false);
+            table.getColumnModel().getColumn(3).setResizable(false);
+            table.getColumnModel().getColumn(4).setResizable(false);
+            table.getColumnModel().getColumn(5).setResizable(false);
+            table.getColumnModel().getColumn(6).setResizable(false);
+            table.getColumnModel().getColumn(7).setResizable(false);
+            table.getColumnModel().getColumn(8).setResizable(false);
+            table.getColumnModel().getColumn(9).setResizable(false);
         }
+
+        toSpinner.setModel(new javax.swing.SpinnerDateModel());
+
+        jLabel3.setText("to:");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -115,14 +137,18 @@ public class StockReportForm extends Form {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton6)
+                        .addComponent(fromSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(toSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(searchButton)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton7)
+                        .addComponent(printAllButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton8)))
+                        .addComponent(printSelButton)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -135,14 +161,16 @@ public class StockReportForm extends Form {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton6))
+                    .addComponent(fromSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(searchButton)
+                    .addComponent(toSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton7)
-                    .addComponent(jButton8))
+                    .addComponent(printAllButton)
+                    .addComponent(printSelButton))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -170,25 +198,72 @@ public class StockReportForm extends Form {
         gui.run("DOCUMENTS");
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+    private void printAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printAllButtonActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton7ActionPerformed
+        if (data != null){
+            Printer srp = new StockReportPrinter(data, ldtFrom, ldtTo);
+            srp.print();
+            gui.throwErrorForm("Generated stock report.");
+            searchButtonActionPerformed(null);
+        }
+    }//GEN-LAST:event_printAllButtonActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
+    private void printSelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printSelButtonActionPerformed
+        // TODO add your handling code here:
+        if (data != null){
+            int[] rows = table.getSelectedRows();
+            Object[][] selectedData = new Object[rows.length][];
+            
+            for (int i = 0; i < rows.length; i++){
+                selectedData[i] = data[rows[i]];
+            }
+            
+            Printer srp = new StockReportPrinter(selectedData, ldtFrom, ldtTo);
+            srp.print();
+            gui.throwErrorForm("Generated stock report.");
+            searchButtonActionPerformed(null);
+        }
+    }//GEN-LAST:event_printSelButtonActionPerformed
+
+    private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
+        // TODO add your handling code here:
+        SpinnerDateModel fromModel = (SpinnerDateModel) fromSpinner.getModel();
+        SpinnerDateModel toModel = (SpinnerDateModel) toSpinner.getModel();
+        
+        ldtFrom = LocalDateTime.ofInstant(fromModel.getDate().toInstant(), ZoneId.systemDefault());
+        ldtTo = LocalDateTime.ofInstant(toModel.getDate().toInstant(), ZoneId.systemDefault());
+        
+        if (ldtTo.isBefore(ldtFrom)) {
+            gui.throwErrorForm("To date must be after From date.");
+            return;
+        }
+        
+        getParts(ldtFrom, ldtTo);
+    }//GEN-LAST:event_searchButtonActionPerformed
+
+    private void getParts(LocalDateTime from, LocalDateTime to){
+        String[] columns = {"Part Name", "Description", "Price", "Initial Stock", "Initial Cost", "Used", "Delivery", "New Stock", "Stock Cost", "Threshold"};
+        data = gui.databaseHandler.getStockReportDetails(from, to);
+        
+        DefaultTableModel dataModel = new DefaultTableModel(data, columns);
+        table.setDefaultEditor(Object.class, null);
+        table.setModel(dataModel);
+    }
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JSpinner fromSpinner;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
-    private javax.swing.JButton jButton8;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JSpinner jSpinner1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JButton printAllButton;
+    private javax.swing.JButton printSelButton;
+    private javax.swing.JButton searchButton;
+    private javax.swing.JTable table;
+    private javax.swing.JSpinner toSpinner;
     // End of variables declaration//GEN-END:variables
+
 }

@@ -1,54 +1,47 @@
 package tft_garits.Job;
 
+import java.util.ArrayList;
+import tft_garits.Stock.Part;
+
 public class Task {
 
-	private String description;
-	private int taskID;
-	private String status;
+    private String description;
+    private int task_no;
+    private String status;
+    private ArrayList<Part> parts;
+    
+    public Task(String description, int task_no, ArrayList<Part> parts) {
+        this.description = description;
+        this.task_no = task_no;
+        this.parts = parts;
+    }
+    
+    public Task(String description, int task_no) {
+        this.description = description;
+        this.task_no = task_no;
+    }
 
-	public String getDescription() {
-		return this.description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	/**
-	 * 
-	 * @param description
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public int getTaskID() {
-		return this.taskID;
-	}
+    public int getTask_no() {
+        return task_no;
+    }
 
-	/**
-	 * 
-	 * @param taskID
-	 */
-	public void setTaskID(int taskID) {
-		this.taskID = taskID;
-	}
+    public void setTask_no(int task_no) {
+        this.task_no = task_no;
+    }
 
-	public String getStatus() {
-		return this.status;
-	}
+    public ArrayList<Part> getParts() {
+        return parts;
+    }
 
-	/**
-	 * 
-	 * @param status
-	 */
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	/**
-	 * 
-	 * @param description
-	 */
-	public static Task Task(String description) {
-		// TODO - implement Task.Task
-		throw new UnsupportedOperationException("Task.Task() needs implementation");
-	}
-
+    public void setParts(ArrayList<Part> parts) {
+        this.parts = parts;
+    }
 }

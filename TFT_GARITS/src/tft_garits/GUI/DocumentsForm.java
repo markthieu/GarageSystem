@@ -5,9 +5,10 @@
  */
 package tft_garits.GUI;
 
+import java.time.LocalDateTime;
 import tft_garits.Database.ValueObject;
-import tft_garits.Documents.InvoiceReminderPrinter;
 import tft_garits.Documents.Printer;
+import tft_garits.Documents.ReminderPrinter;
 
 /**
  *
@@ -35,8 +36,9 @@ public class DocumentsForm extends Form {
         jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        stockButton = new javax.swing.JButton();
+        oustandingButton = new javax.swing.JButton();
+        motButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -49,14 +51,26 @@ public class DocumentsForm extends Form {
 
         jLabel1.setText("Documents");
 
-        jButton2.setText("Generate");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        stockButton.setText("Stock Report");
+        stockButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                stockButtonActionPerformed(evt);
             }
         });
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Booking Report", "Job Report", "Stock Report", "Payment Reminders", "Late Payment Reminders", "MOT Reminders" }));
+        oustandingButton.setText("Oustanding Payments");
+        oustandingButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                oustandingButtonActionPerformed(evt);
+            }
+        });
+
+        motButton.setText("MoT Reminders");
+        motButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                motButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -65,29 +79,35 @@ public class DocumentsForm extends Form {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton2))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jButton1)
-                        .addGap(56, 56, 56)
-                        .addComponent(jLabel1)
-                        .addGap(0, 148, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addGap(147, 147, 147)
+                        .addComponent(jLabel1))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(41, 41, 41)
+                        .addComponent(stockButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(oustandingButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(motButton)))
+                .addContainerGap(52, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton1)
-                    .addComponent(jLabel1))
-                .addGap(18, 18, 18)
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton2)
-                .addContainerGap())
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jButton1))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(36, 36, 36)
+                        .addComponent(jLabel1)))
+                .addGap(36, 36, 36)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(stockButton)
+                    .addComponent(oustandingButton)
+                    .addComponent(motButton))
+                .addContainerGap(29, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -112,44 +132,24 @@ public class DocumentsForm extends Form {
         gui.run("MAINMENU");
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-        String document = jComboBox1.getSelectedItem().toString();
-        
+    private void stockButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stockButtonActionPerformed
+        gui.run("STOCKREPORT");
         this.dispose();
-        switch (document){
-            case "Booking Report":
-                gui.run("BOOKINGREPORT");
-                break;
-                
-            case "Job Report":
-                gui.run("JOBREPORT");
-                break;
-                
-            case "Stock Report":
-                gui.run("STOCKREPORT");
-                break;
-                
-            case "Payment Reminders":
-                printReminders();
-                PaymentReminderForm form1 = new PaymentReminderForm(gui);
-                form1.setLocationRelativeTo(null); //centres the window on the screen
-                form1.setVisible(true);
-                break;
-                
-            case "Late Payment Reminders":
-                PaymentReminderForm form2 = new PaymentReminderForm(gui);
-                form2.setLocationRelativeTo(null); //centres the window on the screen
-                form2.setVisible(true);
-                break;
-                
-            case "MOT Reminders":
-                MOTReminderForm form3 = new MOTReminderForm(gui);
-                form3.setLocationRelativeTo(null); //centres the window on the screen
-                form3.setVisible(true);
-                break;
-        }
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_stockButtonActionPerformed
+
+    private void oustandingButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_oustandingButtonActionPerformed
+        OutstandingListForm form3 = new OutstandingListForm(gui);
+        this.dispose();
+        form3.setLocationRelativeTo(null); //centres the window on the screen
+        form3.setVisible(true);
+    }//GEN-LAST:event_oustandingButtonActionPerformed
+
+    private void motButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_motButtonActionPerformed
+        MOTReminderForm form3 = new MOTReminderForm(gui);
+        this.dispose();
+        form3.setLocationRelativeTo(null); //centres the window on the screen
+        form3.setVisible(true);
+    }//GEN-LAST:event_motButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -158,21 +158,29 @@ public class DocumentsForm extends Form {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JButton motButton;
+    private javax.swing.JButton oustandingButton;
+    private javax.swing.JButton stockButton;
     // End of variables declaration//GEN-END:variables
 
-    private void printReminders() {
-        Integer[] job_nos = gui.databaseHandler.getIntArray("SELECT job_no FROM job", "job_no");
+    private void printReminders(int type) {
+        //needs to check whether this needs doing
+        Integer[] job_nos = gui.databaseHandler.getIntArray("SELECT job_no FROM job WHERE completion_date IS NOT NULL AND reminder_state = " + type, "job_no");
         for (Integer i : job_nos){
             ValueObject no = new ValueObject("int", i);
             String name = gui.databaseHandler.executeStringQuery("SELECT customer_name, job_no FROM customer INNER JOIN job ON customer.customer_no = job.customer_no WHERE job_no = ?", no, "customer_name");
             String[] address = gui.databaseHandler.getCustomerAddress(no, "job_no");
             String reg_no = gui.databaseHandler.executeStringQuery("SELECT reg_no FROM job WHERE job_no = ?", no, "reg_no");
+            LocalDateTime invoice_date = gui.databaseHandler.executeLDTQuery("SELECT invoice_date FROM job WHERE job_no = ?", no, "invoice_date");
             float amount = gui.databaseHandler.executeFloatQuery("SELECT totalamount FROM job WHERE job_no = ?", no, "totalamount");
-            Printer printer = new InvoiceReminderPrinter(name, address, reg_no, amount);
+            
+            //increment reminder state
+            gui.databaseHandler.executeStatement("UPDATE job SET reminder_state = reminder_state + 1 WHERE job_no = " + i);
+            
+            Printer printer;
+            printer = new ReminderPrinter(type, i, name, address, reg_no, invoice_date, amount);
             printer.print();
         }
     }

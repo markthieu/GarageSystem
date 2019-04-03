@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import tft_garits.Database.ValueObject;
+import tft_garits.Job.Task;
 
 /**
  *
@@ -18,6 +19,7 @@ public class TaskForm extends Form {
     
     Integer[] task_nos;
     String[] task_descs;
+    ArrayList<Task> standardTasks;
     /**
      * Creates new form CustomerForm
      */
@@ -33,6 +35,13 @@ public class TaskForm extends Form {
         idNos.forEach((u) -> {
             jobNoComboBox.addItem(u.toString());
         });
+        
+        /*
+        standardTasks = gui.databaseHandler.getTasks("SELECT task_no, task_desc FROM standard_task");
+        standardTasksBox.addItem(null);
+        standardTasks.forEach((u) -> {
+            standardTasksBox.addItem(u.toString());
+        });*/
     }
 
     /**
@@ -56,6 +65,7 @@ public class TaskForm extends Form {
         jScrollPane1 = new javax.swing.JScrollPane();
         taskList = new javax.swing.JList<>();
         partsButton = new javax.swing.JButton();
+        completeButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -92,12 +102,20 @@ public class TaskForm extends Form {
             }
         });
 
+        taskList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane1.setViewportView(taskList);
 
         partsButton.setText("Configure Parts");
         partsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 partsButtonActionPerformed(evt);
+            }
+        });
+
+        completeButton.setText("Mark Complete");
+        completeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                completeButtonActionPerformed(evt);
             }
         });
 
@@ -109,29 +127,31 @@ public class TaskForm extends Form {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jobNoComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jLabel3)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                 .addComponent(partsButton)
+                                .addGap(53, 53, 53)
+                                .addComponent(completeButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(removeButton))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                 .addComponent(taskEntryField)
                                 .addGap(18, 18, 18)
                                 .addComponent(addButton))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jButton1)
                                 .addGap(149, 149, 149)
                                 .addComponent(jLabel1)
-                                .addGap(0, 0, Short.MAX_VALUE)))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jobNoComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addContainerGap())))
         );
         jPanel1Layout.setVerticalGroup(
@@ -159,7 +179,9 @@ public class TaskForm extends Form {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(removeButton)
-                    .addComponent(partsButton, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(partsButton)
+                        .addComponent(completeButton)))
                 .addContainerGap())
         );
 
@@ -204,26 +226,12 @@ public class TaskForm extends Form {
 
     private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
         
-        List<String> selections = taskList.getSelectedValuesList();
-        ArrayList<Integer> toRemove = new ArrayList<>();
+        int selection = taskList.getSelectedIndex();
         
-        if (!selections.isEmpty()){
-            selections.forEach((task_desc) -> {
-                int index = 0;
-                for (int i = 0; i < task_descs.length; i++){
-                    if (task_desc.equals(task_descs[i])){
-                        index = i;
-                        break;
-                    }
-                }
-                int task_no = task_nos[index];
-                toRemove.add(task_no);
-            });
+        if (selection != -1){
+            int task_no = task_nos[selection];
+            gui.databaseHandler.executeStatement("DELETE FROM task WHERE task_no='" + task_no + "'");
         }
-        
-        toRemove.stream().filter((i) -> (i != null)).forEachOrdered((i) -> {
-            gui.databaseHandler.executeStatement("DELETE FROM task WHERE task_no='" + i + "'");
-        });
         
         refreshList();
     }//GEN-LAST:event_removeButtonActionPerformed
@@ -234,21 +242,24 @@ public class TaskForm extends Form {
 
     private void partsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_partsButtonActionPerformed
         
-        List<String> selections = taskList.getSelectedValuesList();
-        if (!selections.isEmpty()){
-            selections.forEach((task_desc) -> {
-                int index = 0;
-                for (int i = 0; i < task_descs.length; i++){
-                    if (task_desc.equals(task_descs[i])){
-                        index = i;
-                        break;
-                    }
-                }
-                int task_no = task_nos[index];
-                gui.showForm(new SetPartsForm(gui, task_desc, task_no));
-            });
+        int selection = taskList.getSelectedIndex();
+        
+        if (selection != -1){
+            int task_no = task_nos[selection];
+            gui.showForm(new SetPartsForm(gui, task_no));
         }
     }//GEN-LAST:event_partsButtonActionPerformed
+
+    private void completeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_completeButtonActionPerformed
+        int selection = taskList.getSelectedIndex();
+        
+        if (selection != -1){
+            int task_no = task_nos[selection];
+            gui.databaseHandler.completeTask(task_no);
+        }
+        
+        refreshList();
+    }//GEN-LAST:event_completeButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -257,6 +268,7 @@ public class TaskForm extends Form {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
+    private javax.swing.JButton completeButton;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -274,8 +286,8 @@ public class TaskForm extends Form {
         if (jobNoComboBox.getSelectedIndex() != 0){
             int job_no = Integer.parseInt((String) jobNoComboBox.getSelectedItem());
 
-            task_nos = gui.databaseHandler.getIntArray("SELECT task_no FROM task WHERE job_no=" + job_no, "task_no");
-            task_descs = gui.databaseHandler.getStringArray("SELECT task_desc FROM task WHERE job_no=" + job_no, "task_desc");
+            task_nos = gui.databaseHandler.getIntArray("SELECT task_no FROM task WHERE job_no=" + job_no + " ORDER BY task_no", "task_no");
+            task_descs = gui.databaseHandler.getTasks("SELECT task_desc, status FROM task WHERE job_no=? ORDER BY task_no", job_no);
 
             assert(task_nos.length == task_descs.length);
 

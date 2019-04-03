@@ -25,8 +25,10 @@ public abstract class Printer {
     Document document;
     String name;
     String[] qffAddress = {"Quick Fix Fitters,", "19 High St.,", "Ashford,", "Kent CT16 8YY"};
-    Font boldFont = new Font(Font.FontFamily.TIMES_ROMAN, 14, Font.BOLD);
-    Font normalFont = new Font(Font.FontFamily.TIMES_ROMAN, 10);
+    Font boldFont = new Font(Font.FontFamily.HELVETICA, 14, Font.BOLD);
+    Font normalFont = new Font(Font.FontFamily.HELVETICA, 10);
+    Font smallFont = new Font(Font.FontFamily.HELVETICA, 10);
+    Font smallBoldFont = new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD);
     
     public Printer(){
         document = new Document();
@@ -79,5 +81,28 @@ public abstract class Printer {
         }
         
         doc.add(table);
+    }
+    
+    protected PdfPCell createCell(String text){
+        PdfPCell cell = new PdfPCell();
+        cell.addElement(new Paragraph(text));
+        cell.setBorder(Rectangle.BOTTOM);
+        cell.setMinimumHeight(10f);
+        return cell;
+    }
+    
+    protected PdfPCell createBlankCell(String text){
+        PdfPCell cell = new PdfPCell();
+        cell.addElement(new Paragraph(text));
+        cell.setBorder(Rectangle.NO_BORDER);
+        cell.setMinimumHeight(10f);
+        return cell;
+    }
+    
+    protected void blankRow(PdfPTable table){
+        for (int i = 0; i < table.getNumberOfColumns(); i++){
+            table.addCell(createBlankCell(""));
+        }
+        table.completeRow();
     }
 }

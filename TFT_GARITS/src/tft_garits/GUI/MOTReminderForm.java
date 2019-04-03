@@ -5,18 +5,31 @@
  */
 package tft_garits.GUI;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import tft_garits.Database.ValueObject;
+import tft_garits.Documents.MOTReminderPrinter;
+import tft_garits.Documents.Printer;
+
 /**
  *
  * @author George Kemp
  */
 public class MOTReminderForm extends Form {
-
+    
+    ArrayList<String> vehicles;
     /**
      * Creates new form IncorrectPasswordForm
      */
     public MOTReminderForm(GUI gui) {
         super(gui);
         initComponents();
+        
+        vehicles = new ArrayList<>();
+        
+        vehicles = gui.databaseHandler.getNameArray("SELECT * FROM vehicle WHERE last_mot IS NOT NULL AND last_mot < now() - INTERVAL '10 months'", "reg_no");
+        
+        updateList();
     }
 
     /**
@@ -31,15 +44,27 @@ public class MOTReminderForm extends Form {
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        vehicleList = new javax.swing.JList<>();
+        printButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setText("MOT Reminder");
+        jLabel1.setText("Cars Needing MOT Reminders");
 
-        jButton1.setText("ok");
+        jButton1.setText("Documents");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
+            }
+        });
+
+        jScrollPane1.setViewportView(vehicleList);
+
+        printButton.setText("Print Selected");
+        printButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                printButtonActionPerformed(evt);
             }
         });
 
@@ -48,23 +73,31 @@ public class MOTReminderForm extends Form {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(60, 60, 60)
-                        .addComponent(jButton1))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(33, 33, 33)
-                        .addComponent(jLabel1)))
-                .addContainerGap(47, Short.MAX_VALUE))
+                        .addComponent(jButton1)
+                        .addGap(59, 59, 59)
+                        .addComponent(jLabel1)
+                        .addGap(0, 145, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(printButton)))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton1)
-                .addContainerGap(12, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButton1)
+                    .addComponent(jLabel1))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                .addComponent(printButton)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -92,10 +125,45 @@ public class MOTReminderForm extends Form {
         gui.run("DOCUMENTS");
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void printButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printButtonActionPerformed
+        // TODO add your handling code here:
+        int[] selections = vehicleList.getSelectedIndices();
+        for (int i : selections){
+            String reg_no = vehicles.get(i);
+            ValueObject reg = new ValueObject("String", vehicles.get(i));
+            String customer = gui.databaseHandler.executeStringQuery("SELECT customer_name FROM customer INNER JOIN vehicle ON customer.customer_no = vehicle.customer_no WHERE reg_no=?", reg, "customer_name");
+            String[] customerAddress = gui.databaseHandler.getCustomerAddress(reg, "reg_no");
+            LocalDateTime test_date = gui.databaseHandler.executeLDTQuery("SELECT last_mot FROM vehicle WHERE reg_no=?", reg, "last_mot");
+            Printer printer = new MOTReminderPrinter(customer, customerAddress, reg_no, test_date);
+            printer.print();
+        }
+        
+        if (selections.length > 0)
+            gui.throwErrorForm("Generated pdfs.");
+    }//GEN-LAST:event_printButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton printButton;
+    private javax.swing.JList<String> vehicleList;
     // End of variables declaration//GEN-END:variables
+
+    private void updateList() {
+        String[] data = new String[vehicles.size()];
+        for (int i = 0; i < data.length; i++){
+            ValueObject reg = new ValueObject("String", vehicles.get(i));
+            String name = gui.databaseHandler.executeStringQuery("SELECT customer_name FROM customer FULL JOIN vehicle ON customer.customer_no = vehicle.customer_no WHERE reg_no=?", reg, "customer_name");
+            String make = gui.databaseHandler.executeStringQuery("SELECT make FROM vehicle WHERE reg_no=?", reg, "make");
+            String model = gui.databaseHandler.executeStringQuery("SELECT model FROM vehicle WHERE reg_no=?", reg, "model");
+            String last_mot = gui.databaseHandler.executeDateQuery("SELECT last_mot FROM vehicle WHERE reg_no=?", reg, "last_mot");
+            String detail = name + ": " + vehicles.get(i) + ", " + make + " " + model + ", last MOT: " + last_mot;
+            data[i] = detail;
+        }
+        
+        vehicleList.setListData(data);
+    }
 }

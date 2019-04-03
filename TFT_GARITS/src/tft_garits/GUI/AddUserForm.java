@@ -5,6 +5,8 @@
  */
 package tft_garits.GUI;
 
+import tft_garits.Database.ValueObject;
+
 /**
  *
  * @author George Kemp
@@ -166,17 +168,21 @@ public class AddUserForm extends Form {
         // take in field details & add user to database
         
         String user_name = jTextField1.getText();
-        char[] password = jPasswordField1.getPassword();
-        String full_name = jTextField3.getText();
-        String account_type = jComboBox1.getSelectedItem().toString();
-        //job_role =
-        
-        gui.databaseHandler.insertUser(user_name, new String(password), account_type, full_name);
-        //needs to inform user of successful addition?
-        //POP UP
-        jTextField1.setText("");
-        jPasswordField1.setText("");
-        jTextField3.setText("");
+        if (!userNameFound(user_name)){
+            char[] password = jPasswordField1.getPassword();
+            String full_name = jTextField3.getText();
+            String account_type = jComboBox1.getSelectedItem().toString();
+            //job_role =
+
+            gui.databaseHandler.insertUser(user_name, new String(password), account_type, full_name);
+            gui.throwErrorForm(user_name + " added.");
+            //POP UP
+            jTextField1.setText("");
+            jPasswordField1.setText("");
+            jTextField3.setText("");
+        } else {
+            gui.throwErrorForm("User name taken.");
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
 
@@ -194,4 +200,8 @@ public class AddUserForm extends Form {
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField3;
     // End of variables declaration//GEN-END:variables
+
+    private boolean userNameFound(String user_name) {
+        return gui.databaseHandler.checkQuery("SELECT user_name FROM login WHERE user_name=?", new ValueObject("string", user_name),"user_name");
+    }
 }

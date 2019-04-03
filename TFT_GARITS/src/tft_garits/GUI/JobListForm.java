@@ -7,6 +7,8 @@ package tft_garits.GUI;
 
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
+import tft_garits.Documents.InvoicePrinter;
+import tft_garits.Documents.Printer;
 
 /**
  *
@@ -16,6 +18,7 @@ public class JobListForm extends Form {
     
     boolean hideComplete = false;
     boolean showUnallocated = false;
+    Object[][] data;
     /**
      * Creates new form CustomerForm
      */
@@ -39,11 +42,11 @@ public class JobListForm extends Form {
         jButton1 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         unallocatedCheck = new javax.swing.JCheckBox();
-        jButton7 = new javax.swing.JButton();
-        jButton8 = new javax.swing.JButton();
-        jButton9 = new javax.swing.JButton();
-        jButton10 = new javax.swing.JButton();
-        jButton11 = new javax.swing.JButton();
+        printButton = new javax.swing.JButton();
+        printAllButton = new javax.swing.JButton();
+        saveButton = new javax.swing.JButton();
+        inProgressButton = new javax.swing.JButton();
+        completeButton = new javax.swing.JButton();
         jButton12 = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
@@ -72,15 +75,30 @@ public class JobListForm extends Form {
             }
         });
 
-        jButton7.setText("Print Invoice");
+        printButton.setText("Print Invoice");
+        printButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                printButtonActionPerformed(evt);
+            }
+        });
 
-        jButton8.setText("Print All");
+        printAllButton.setText("Print All");
 
-        jButton9.setText("Save");
+        saveButton.setText("Save");
 
-        jButton10.setText("In Progress");
+        inProgressButton.setText("In Progress");
+        inProgressButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                inProgressButtonActionPerformed(evt);
+            }
+        });
 
-        jButton11.setText("Completed");
+        completeButton.setText("Complete");
+        completeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                completeButtonActionPerformed(evt);
+            }
+        });
 
         jButton12.setText("Remove");
 
@@ -89,14 +107,14 @@ public class JobListForm extends Form {
 
             },
             new String [] {
-                "Job Number", "Vehicle Reg", "Mechanic ID", "Mechanic Name", "Status"
+                "Job Number", "Vehicle Reg", "Mechanic ID", "Mechanic Name", "Job Status", "Payment Status"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -110,13 +128,14 @@ public class JobListForm extends Form {
         table.setColumnSelectionAllowed(true);
         table.getTableHeader().setReorderingAllowed(false);
         jScrollPane2.setViewportView(table);
-        table.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        table.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         if (table.getColumnModel().getColumnCount() > 0) {
             table.getColumnModel().getColumn(0).setResizable(false);
             table.getColumnModel().getColumn(1).setResizable(false);
             table.getColumnModel().getColumn(2).setResizable(false);
             table.getColumnModel().getColumn(3).setResizable(false);
             table.getColumnModel().getColumn(4).setResizable(false);
+            table.getColumnModel().getColumn(5).setResizable(false);
         }
 
         hideCompleteCheck.setText("Hide Complete");
@@ -152,15 +171,15 @@ public class JobListForm extends Form {
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 701, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGroup(jPanel1Layout.createSequentialGroup()
-                                    .addComponent(jButton7)
+                                    .addComponent(printButton)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jButton8)
+                                    .addComponent(printAllButton)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jButton9)
+                                    .addComponent(saveButton)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jButton10)
+                                    .addComponent(inProgressButton)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(jButton11)
+                                    .addComponent(completeButton)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                     .addComponent(jButton12))))
                         .addGap(0, 14, Short.MAX_VALUE))))
@@ -180,11 +199,11 @@ public class JobListForm extends Form {
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 351, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton7)
-                    .addComponent(jButton8)
-                    .addComponent(jButton9)
-                    .addComponent(jButton10)
-                    .addComponent(jButton11)
+                    .addComponent(printButton)
+                    .addComponent(printAllButton)
+                    .addComponent(saveButton)
+                    .addComponent(inProgressButton)
+                    .addComponent(completeButton)
                     .addComponent(jButton12))
                 .addGap(21, 21, 21))
         );
@@ -231,31 +250,72 @@ public class JobListForm extends Form {
         updateTable();
     }//GEN-LAST:event_unallocatedCheckStateChanged
 
+    private void inProgressButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inProgressButtonActionPerformed
+        int[] rows = table.getSelectedRows();
+        for (int i : rows){
+            int job_no = (int) data[i][0];
+            gui.databaseHandler.executeStatement("UPDATE job SET status = 'In Progress' WHERE job_no=" + job_no);
+        }
+        
+        updateTable();
+    }//GEN-LAST:event_inProgressButtonActionPerformed
+
+    private void completeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_completeButtonActionPerformed
+        int[] rows = table.getSelectedRows();
+        for (int i : rows){
+            int job_no = (int) data[i][0];
+            gui.databaseHandler.completeJob(job_no);
+        }
+        
+        updateTable();
+    }//GEN-LAST:event_completeButtonActionPerformed
+
+    private void printButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printButtonActionPerformed
+        int[] rows = table.getSelectedRows();
+        for (int i : rows){
+            int job_no = (int) data[i][0];
+            if (data[i][4].equals("Complete")){
+                Object[] details = gui.databaseHandler.getInvoiceDetails(job_no);
+                if (details[8] != null) {
+                    Printer printer = new InvoicePrinter(details);
+                    printer.print();
+                    gui.databaseHandler.executeStatement("UPDATE job SET reminder_state = 1, invoice_date = CURRENT_DATE WHERE job_no=" + job_no);
+                    gui.throwErrorForm("Printed invoice " + job_no + ".");
+                } else {
+                    gui.throwErrorForm("Invoice must have a mechanic.");
+                }
+            } else {
+                gui.throwErrorForm("Job must be completed.");
+            }
+        }
+    }//GEN-LAST:event_printButtonActionPerformed
+
     private void updateTable(){
         //job_no int, vehicle_reg string, mech id int, mech name string, job status
-        String[] columns = {"job_no", "vehicle_reg", "mech_id", "mech_name", "status"};
+        String[] columns = {"Job Number", "Vehicle Registration", "Mechanic ID", "Mechanic Name", "Job Status", "Payment Status"};
                 
         //get data for each job
         String condition1 = hideComplete ? "status != 'Complete'": "TRUE";
-        String condition2 = showUnallocated ? " AND staff_name = ''" : " AND TRUE";
-        Object[][] data = gui.databaseHandler.getJobDetails(condition1, condition2);
+        String condition2 = showUnallocated ? " AND job.staff_no IS NULL" : " AND TRUE";
+        data = gui.databaseHandler.getJobDetails(condition1, condition2);
         
         DefaultTableModel dataModel = new DefaultTableModel(data, columns);
+        table.setDefaultEditor(Object.class, null);
         table.setModel(dataModel);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton completeButton;
     private javax.swing.JCheckBox hideCompleteCheck;
+    private javax.swing.JButton inProgressButton;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton10;
-    private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton12;
-    private javax.swing.JButton jButton7;
-    private javax.swing.JButton jButton8;
-    private javax.swing.JButton jButton9;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JButton printAllButton;
+    private javax.swing.JButton printButton;
+    private javax.swing.JButton saveButton;
     private javax.swing.JTable table;
     private javax.swing.JCheckBox unallocatedCheck;
     // End of variables declaration//GEN-END:variables

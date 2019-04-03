@@ -18,6 +18,15 @@ public class Stock {
         calcTotal();
     }
     
+    public Stock(int part_no, String part_name, String part_desc, int amount, float cost) {
+        this.part_no = part_no;
+        this.part_name = part_name;
+        this.part_desc = part_desc;
+        this.cost = cost;
+        this.amount = amount;
+        calcTotal();
+    }
+    
     public void add(int inc){
         amount = amount + inc;
         calcTotal();

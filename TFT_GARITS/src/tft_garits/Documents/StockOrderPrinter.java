@@ -56,12 +56,7 @@ public class StockOrderPrinter extends Printer {
             
             table.completeRow();
             
-            table.addCell(createBlankCell(""));
-            table.addCell(createBlankCell(""));
-            table.addCell(createBlankCell(""));
-            table.addCell(createBlankCell(""));
-            
-            table.completeRow();
+            blankRow(table);
             
             float total = 0;
             for (Stock s : data){
@@ -90,19 +85,5 @@ public class StockOrderPrinter extends Printer {
         } catch (DocumentException ex) {
             Logger.getLogger(StockOrderPrinter.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-    
-    private PdfPCell createCell(String text){
-        PdfPCell cell = new PdfPCell();
-        cell.addElement(new Paragraph(text));
-        cell.setBorder(Rectangle.BOTTOM);
-        return cell;
-    }
-    
-    private PdfPCell createBlankCell(String text){
-        PdfPCell cell = new PdfPCell();
-        cell.addElement(new Paragraph(text));
-        cell.setBorder(Rectangle.NO_BORDER);
-        return cell;
     }
 }

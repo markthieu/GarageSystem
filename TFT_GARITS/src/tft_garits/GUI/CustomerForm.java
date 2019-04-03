@@ -51,11 +51,6 @@ public class CustomerForm extends Form {
         contactNoTextField = new javax.swing.JTextField();
         emailTextField = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
-        fixedCheck = new javax.swing.JCheckBox();
-        flexibleCheck = new javax.swing.JCheckBox();
-        variableCheck = new javax.swing.JCheckBox();
-        payLaterCheck = new javax.swing.JCheckBox();
         addButton = new javax.swing.JButton();
         editButton = new javax.swing.JButton();
         searchButton = new javax.swing.JButton();
@@ -63,6 +58,8 @@ public class CustomerForm extends Form {
         clearButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         vehiclesList = new javax.swing.JList<>();
+        vehicleButton = new javax.swing.JButton();
+        accountHolderButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -100,21 +97,6 @@ public class CustomerForm extends Form {
         });
 
         jLabel8.setText("Vehicles:");
-
-        jLabel9.setText("Discount Plan");
-
-        fixedCheck.setText("Fixed");
-        fixedCheck.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fixedCheckActionPerformed(evt);
-            }
-        });
-
-        flexibleCheck.setText("Flexible");
-
-        variableCheck.setText("Variable");
-
-        payLaterCheck.setText("Pay later option");
 
         addButton.setText("Add New");
         addButton.addActionListener(new java.awt.event.ActionListener() {
@@ -155,6 +137,20 @@ public class CustomerForm extends Form {
         vehiclesList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane1.setViewportView(vehiclesList);
 
+        vehicleButton.setText("Edit Vehicles");
+        vehicleButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                vehicleButtonActionPerformed(evt);
+            }
+        });
+
+        accountHolderButton.setText("Manage Account");
+        accountHolderButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                accountHolderButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -169,6 +165,8 @@ public class CustomerForm extends Form {
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                 .addComponent(editButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(accountHolderButton)
+                                .addGap(18, 18, 18)
                                 .addComponent(removeButton)
                                 .addContainerGap())
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
@@ -197,22 +195,9 @@ public class CustomerForm extends Form {
                                             .addGap(18, 18, 18)
                                             .addComponent(contactNoTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE))))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jLabel8)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(payLaterCheck)
-                                        .addGroup(jPanel1Layout.createSequentialGroup()
-                                            .addComponent(fixedCheck)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addComponent(jLabel9)
-                                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                                    .addComponent(flexibleCheck)
-                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                    .addComponent(variableCheck)))))))
+                                .addComponent(jLabel8)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jButton1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -226,6 +211,10 @@ public class CustomerForm extends Form {
                                 .addComponent(searchButton)
                                 .addGap(0, 0, Short.MAX_VALUE)))
                         .addContainerGap())))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(vehicleButton)
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -262,26 +251,17 @@ public class CustomerForm extends Form {
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel7)
-                            .addComponent(emailTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(addButton)
-                            .addComponent(editButton)
-                            .addComponent(removeButton)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel8)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel9)
-                        .addGap(10, 10, 10)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(fixedCheck)
-                            .addComponent(flexibleCheck)
-                            .addComponent(variableCheck))
-                        .addGap(18, 18, 18)
-                        .addComponent(payLaterCheck)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                            .addComponent(emailTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jLabel8)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(vehicleButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(addButton)
+                    .addComponent(editButton)
+                    .addComponent(removeButton)
+                    .addComponent(accountHolderButton))
                 .addContainerGap())
         );
 
@@ -309,10 +289,6 @@ public class CustomerForm extends Form {
         this.dispose();
         gui.run("MAINMENU");
     }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void fixedCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fixedCheckActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_fixedCheckActionPerformed
 
     private void postcodeTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_postcodeTextFieldActionPerformed
         // TODO add your handling code here:
@@ -355,6 +331,9 @@ public class CustomerForm extends Form {
             gui.databaseHandler.executeArrayInsert(sql, values);
             
             editButton.setText("Changes saved");
+            
+            clearFields();
+            gui.throwErrorForm("Added/Updated customer.");
         }
     }//GEN-LAST:event_editButtonActionPerformed
 
@@ -422,20 +401,47 @@ public class CustomerForm extends Form {
     private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
         
         int customerID = Integer.parseInt(idNoTextField.getText());
-        clearFields();
-        gui.databaseHandler.executeStatement("DELETE FROM customer WHERE customer_no='" + customerID + "'");
-        
-        gui.throwErrorForm("Removed customer " + customerID);
-        
-        //enable search, add
-        idNoTextField.setEditable(true);
-        addButton.setEnabled(true);
-        searchButton.setEnabled(true);
-        //disable remove & edit
-        removeButton.setEnabled(false);
-        editButton.setEnabled(false);
-        editButton.setText("Save");
+        if (gui.databaseHandler.checkCustomerPaid(customerID)){
+            clearFields();
+            gui.databaseHandler.executeStatement("DELETE FROM customer WHERE customer_no='" + customerID + "'");
+
+            gui.throwErrorForm("Removed customer " + customerID);
+
+            //enable search, add
+            idNoTextField.setEditable(true);
+            addButton.setEnabled(true);
+            searchButton.setEnabled(true);
+            //disable remove & edit
+            removeButton.setEnabled(false);
+            editButton.setEnabled(false);
+            editButton.setText("Save");
+        } else {
+            gui.throwErrorForm("Customer has unpaid jobs.");
+        }
     }//GEN-LAST:event_removeButtonActionPerformed
+
+    private void vehicleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_vehicleButtonActionPerformed
+        try {
+            currentID = Integer.parseInt(idNoTextField.getText());
+            if (vehiclesList.getModel().getSize() > 0){
+                gui.showForm(new VehiclesEditForm(currentID, gui));
+            } else {
+                gui.throwErrorForm("Customer has no vehicles to edit.");
+            }
+        } catch (NumberFormatException e) {
+            gui.throwErrorForm("ID must be a Number.");
+        }
+    }//GEN-LAST:event_vehicleButtonActionPerformed
+
+    private void accountHolderButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accountHolderButtonActionPerformed
+        // TODO add your handling code here:
+        try {
+            currentID = Integer.parseInt(idNoTextField.getText());
+            gui.showForm(new AccountHolderForm(currentID, gui));
+        } catch (NumberFormatException e) {
+            gui.throwErrorForm("ID must be a Number.");
+        }
+    }//GEN-LAST:event_accountHolderButtonActionPerformed
 
     private void clearFields(){
         idNoTextField.setText("");
@@ -444,6 +450,7 @@ public class CustomerForm extends Form {
         postcodeTextField.setText("");
         contactNoTextField.setText("");
         emailTextField.setText("");
+        vehiclesList.setListData(new String[0]);
         
         /*
         vehiclesTextField
@@ -455,14 +462,13 @@ public class CustomerForm extends Form {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton accountHolderButton;
     private javax.swing.JButton addButton;
     private javax.swing.JTextField addressTextField;
     private javax.swing.JButton clearButton;
     private javax.swing.JTextField contactNoTextField;
     private javax.swing.JButton editButton;
     private javax.swing.JTextField emailTextField;
-    private javax.swing.JCheckBox fixedCheck;
-    private javax.swing.JCheckBox flexibleCheck;
     private javax.swing.JTextField fullNameTextField;
     private javax.swing.JTextField idNoTextField;
     private javax.swing.JButton jButton1;
@@ -474,14 +480,12 @@ public class CustomerForm extends Form {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JCheckBox payLaterCheck;
     private javax.swing.JTextField postcodeTextField;
     private javax.swing.JButton removeButton;
     private javax.swing.JButton searchButton;
-    private javax.swing.JCheckBox variableCheck;
+    private javax.swing.JButton vehicleButton;
     private javax.swing.JList<String> vehiclesList;
     // End of variables declaration//GEN-END:variables
 

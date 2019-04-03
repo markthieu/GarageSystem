@@ -5,6 +5,13 @@
  */
 package tft_garits.GUI;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import tft_garits.Database.ConnectionHandler;
 import tft_garits.Database.DatabaseHandler;
 
@@ -26,6 +33,20 @@ public class GARITS { //GUI handler & main class
         
         ConnectionHandler connectionHandler = new ConnectionHandler(url, user, password);
         DatabaseHandler databaseHandler = new DatabaseHandler(connectionHandler.connect(), url);
+        
+        
+        try {
+            Path reminder = Paths.get("documents/reminders");
+            Path stockOrder = Paths.get("documents/stockOrder");
+            Path invoice = Paths.get("documents/invoices");
+            Path stockReport = Paths.get("documents/stockReports");
+            Files.createDirectories(reminder);
+            Files.createDirectories(invoice);
+            Files.createDirectories(stockOrder);
+            Files.createDirectories(stockReport);
+        } catch (IOException ex) {
+            Logger.getLogger(GARITS.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         //creates account table and initialises with admin account
         try {

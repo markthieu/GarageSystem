@@ -33,6 +33,17 @@ public class StockForm extends Form {
         stockEntries = new ArrayList<>();
     }
 
+    public StockForm(ArrayList<Stock> lowStock, GUI gui) {
+        super(gui);
+        initComponents();
+        
+        updatePartsList();
+        stockEntries = lowStock;
+        updateOrderList();
+        
+        jButton1.setText("Close");
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -189,7 +200,10 @@ public class StockForm extends Form {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         this.dispose();
-        gui.run("STOCK");
+        //closes window if started through notification
+        if (!jButton1.getText().equals("Close")){
+            gui.run("STOCK");
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed

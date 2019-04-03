@@ -5,6 +5,7 @@
  */
 package tft_garits.GUI;
 
+import java.util.ArrayList;
 import tft_garits.Account.Administrator;
 import tft_garits.Account.Foreperson;
 import tft_garits.Account.Franchisee;
@@ -12,6 +13,7 @@ import tft_garits.Account.Mechanic;
 import tft_garits.Account.Receptionist;
 import tft_garits.Account.User;
 import tft_garits.Database.DatabaseHandler;
+import tft_garits.Stock.Stock;
 
 
 /**
@@ -44,12 +46,15 @@ public class GUI {
                     showForm(new SettingsForm(this));
                 } else if (currentUser instanceof Franchisee){
                     showForm(new FranchiseeMenu(this));
+                    stockNotification();
                 } else if (currentUser instanceof Foreperson){
                     showForm(new ForepersonMenu(this));
+                    stockNotification();
                 } else if (currentUser instanceof Mechanic){
                     showForm(new MechanicMenu(this));
                 } else if (currentUser instanceof Receptionist){
                     showForm(new ReceptionistMenu(this));
+                    stockNotification();
                 }
                 break;
             
@@ -109,6 +114,10 @@ public class GUI {
                 showForm(new EditPartForm(this));
                 break;
                 
+            case "STOCKLEVEL":
+                showForm(new UpdateStockLevelForm(this));
+                break;
+                
             default: 
                 showForm(new ErrorForm(this));
         }
@@ -127,5 +136,14 @@ public class GUI {
         ErrorNotification error = new ErrorNotification(text);
         error.setLocationRelativeTo(null); //centres the window on the screen
         error.setVisible(true);
+    }
+
+    private void stockNotification() {
+        ArrayList<Stock> lowStock = databaseHandler.getLowStock();
+        //stockEntries.add(new Stock(part_no, name, desc, price));
+        if (lowStock.size() > 0){
+            Form lowStockAlert = new lowStockAlert(lowStock, this);
+            showForm(lowStockAlert);
+        }
     }
 }

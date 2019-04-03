@@ -189,7 +189,7 @@ public class LoginForm extends Form {
             gui.run("MAINMENU");
         } else {
             //error window for incorrect password
-            gui.throwErrorForm("incorrect password");
+            gui.throwErrorForm("Incorrect account details.");
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 

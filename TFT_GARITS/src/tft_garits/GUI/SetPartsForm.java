@@ -25,13 +25,13 @@ public class SetPartsForm extends Form {
     /**
      * Creates new form SetPartsForm
      */
-    public SetPartsForm(GUI gui, String task, int task_no) {
+    public SetPartsForm(GUI gui, int task_no) {
         super(gui);
         initComponents();
         
         this.task_no = task_no;
         
-        taskField.setText(task);
+        taskField.setText(gui.databaseHandler.executeStringQuery("SELECT task_desc FROM task WHERE task_no=?", new ValueObject("int", task_no), "task_desc"));
         taskField.setEditable(false);
         updatePartsList();
         updateSelectedList();

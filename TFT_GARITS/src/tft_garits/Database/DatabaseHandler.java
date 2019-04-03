@@ -5,16 +5,22 @@
  */
 package tft_garits.Database;
 
+import static java.lang.Math.abs;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import tft_garits.Job.Task;
+import tft_garits.Stock.Part;
+import tft_garits.Stock.Stock;
 
 /**
  *
@@ -328,9 +334,11 @@ public class DatabaseHandler {
                             + "date_booked DATE NOT NULL,\n"
                             + "reg_no varchar NOT NULL,\n"
                             + "staff_no int,\n"
-                            + "totalAmount FLOAT NOT NULL,\n"
+                            + "totalAmount FLOAT default 0,\n"
                             + "estimated_time FLOAT NOT NULL,\n"
                             + "completion_date DATE,\n"
+                            + "invoice_date DATE,\n"
+                            + "reminder_state int NOT NULL default 0,\n" //0 invoice not printed, 1 invoice printed, 2 reminder sent, 3 further reminder sent, 4 final reminder, 5 paid in full
                             + "PRIMARY KEY (job_no)\n"
                         + ");");
         
@@ -362,6 +370,7 @@ public class DatabaseHandler {
         executeStatement("CREATE TABLE IF NOT EXISTS Task_Part (\n"
                             + "task_no int REFERENCES Task (task_no) ON UPDATE CASCADE ON DELETE CASCADE,\n"
                             + "part_no int REFERENCES Part (part_no) ON UPDATE CASCADE,\n"
+                            + "status int NOT NULL DEFAULT 0,\n"
                             + "amount int NOT NULL DEFAULT 1\n"
                         + ");");
                 
@@ -373,6 +382,7 @@ public class DatabaseHandler {
                             + "colour varchar,\n"
                             + "eng_serial varchar,\n"
                             + "chassis_no varchar,\n"
+                            + "last_mot DATE,\n"
                             + "PRIMARY KEY (reg_no)\n"
                         + ");");
                 
@@ -391,6 +401,12 @@ public class DatabaseHandler {
                             + "account_type varchar NOT NULL,\n"
                             + "PRIMARY KEY (user_name)\n"
                         + ");");
+        
+        executeStatement("CREATE TABLE IF NOT EXISTS Stock (\n"
+                            + "part_no int NOT NULL,\n"
+                            + "stock_change int NOT NULL,\n"
+                            + "date DATE NOT NULL DEFAULT CURRENT_TIMESTAMP\n"
+                        + ");");
           
         executeStatement("ALTER TABLE Job DROP CONSTRAINT IF EXISTS Job_fk0;");
         executeStatement("ALTER TABLE Job ADD CONSTRAINT Job_fk0 FOREIGN KEY (customer_no) REFERENCES Customer(customer_no);");
@@ -406,6 +422,9 @@ public class DatabaseHandler {
                 
         executeStatement("ALTER TABLE Task DROP CONSTRAINT IF EXISTS Task_fk0;");
         executeStatement("ALTER TABLE Task ADD CONSTRAINT Task_fk0 FOREIGN KEY (job_no) REFERENCES Job(job_no);");
+        
+        executeStatement("ALTER TABLE Stock DROP CONSTRAINT IF EXISTS Stock_fk0;");
+        executeStatement("ALTER TABLE Stock ADD CONSTRAINT Stock_fk0 FOREIGN KEY (part_no) REFERENCES Part(part_no);");
         
         executeStatement("ALTER TABLE Vehicle DROP CONSTRAINT IF EXISTS Vehicle_fk0;");
         executeStatement("ALTER TABLE Vehicle ADD CONSTRAINT Vehicle_fk0 FOREIGN KEY (customer_no) REFERENCES Customer(customer_no);");
@@ -703,6 +722,7 @@ public class DatabaseHandler {
                 +    "WHERE task_no IN (SELECT task_no FROM task WHERE job_no=?) "
                 +    "ORDER BY task_part.part_no ASC";
         ArrayList<String> strings = new ArrayList<>();
+        float total = 0;
         try (PreparedStatement pstmt = conn.prepareStatement(sql)){
             pstmt.setInt(1, job_no);
             ResultSet rs = pstmt.executeQuery();
@@ -710,6 +730,8 @@ public class DatabaseHandler {
             while(rs.next()){
                 String detail = rs.getString("part_name");
                 detail = detail + ", " + rs.getInt("amount");
+                
+                total = total + rs.getInt("amount") * rs.getFloat("price");
                 strings.add(detail);
             }
             
@@ -719,24 +741,47 @@ public class DatabaseHandler {
             System.out.println(sql);
         }
         
+        strings.add(String.format("%.2f", total));
         assert(strings.size() > 0);
         String[] type = new String[strings.size()];
         return strings.toArray(type);
     }
 
     public Object[][] getJobDetails(String condition1, String condition2) {
-        String sql = "SELECT * FROM job LEFT JOIN staff ON job.staff_no = staff.staff_no WHERE " + condition1 + condition2;
+        String sql = "SELECT * FROM job LEFT JOIN staff ON job.staff_no = staff.staff_no WHERE " + condition1 + condition2 + " ORDER BY job_no";
         ArrayList<Object[]> output = new ArrayList<>();
         try (PreparedStatement pstmt = conn.prepareStatement(sql)){
             ResultSet rs = pstmt.executeQuery();
             
             while(rs.next()){
-                Object[] out = new Object[5];
+                Object[] out = new Object[6];
                 out[0] = rs.getInt("job_no");
                 out[1] = rs.getString("reg_no");
                 out[2] = 0 == rs.getInt("staff_no") ? null : rs.getInt("staff_no");
                 out[3] = rs.getString("staff_name");
                 out[4] = rs.getString("status");
+                String state = "sql error";
+                switch (rs.getInt("reminder_state")){
+                    case 0: 
+                        state = "Job incomplete";
+                        break;
+                    case 1: 
+                        state = "Invoice printed";
+                        break;
+                    case 2: 
+                        state = "1st Reminder";
+                        break;
+                    case 3: 
+                        state = "2nd Reminder";
+                        break;
+                    case 4: 
+                        state = "Final Reminder";
+                        break;
+                    case 5: 
+                        state = "Paid in full";
+                        break;
+                }
+                out[5] = state;
                 output.add(out);
             }
             
@@ -826,6 +871,7 @@ public class DatabaseHandler {
     public String[] getCustomerAddress(ValueObject value, String valueColumn) {
         String sql = "";
         if (valueColumn.equals("job_no")) sql = "SELECT address, post_code FROM customer INNER JOIN job ON customer.customer_no = job.customer_no WHERE job_no = ?";
+        if (valueColumn.equals("reg_no")) sql = "SELECT address, post_code FROM customer INNER JOIN vehicle ON customer.customer_no = vehicle.customer_no WHERE reg_no = ?";
         if (valueColumn.equals("customer_no")) sql = "SELECT address, post_code FROM customer WHERE customer_no = ?";
         
         try (PreparedStatement pstmt = conn.prepareStatement(sql)){
@@ -857,5 +903,507 @@ public class DatabaseHandler {
         return null;
     }
 
+    public Object[] getInvoiceDetails(int job_no) {
+        Object[] data = new Object[10];
+        
+        //job no
+        data[0] = job_no;
+        //date
+        String customer_name;
+        String[] customer_address;
+        String reg_no;
+        String make;
+        String model;
+        
+        ArrayList<Task> tasks = new ArrayList<>();
+        ArrayList<Part> parts = new ArrayList<>();
+        
+        float hourly_rate; 
+        float time_taken; 
+        
+        String sql = "SELECT * FROM "
+                + "job INNER JOIN customer ON job.customer_no = customer.customer_no "
+                +     "INNER JOIN vehicle ON vehicle.reg_no = job.reg_no "
+                + "WHERE job_no=?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setInt(1, job_no);
+            ResultSet rs = pstmt.executeQuery();
+            
+            while(rs.next()){
+                
+                customer_name = rs.getString("customer_name");
+                data[1] = customer_name;
+                //make address
+                String address = rs.getString("address");
+                String post_code = rs.getString("post_code");
+                customer_address = address.split(", ");
+                
+                for (int i = 0; i < customer_address.length; i++){
+                    if (i < customer_address.length-1){
+                        customer_address[i] = customer_address[i] + ", ";
+                    } else {
+                        customer_address[i] = customer_address[i] + " " + post_code;
+                    }
+                }
+                data[2] = customer_address;
+                
+                reg_no = rs.getString("reg_no");
+                make = rs.getString("make");
+                model = rs.getString("model");
+                data[3] = reg_no;
+                data[4] = make;
+                data[5] = model;
+                
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        sql = "SELECT * FROM task WHERE job_no=?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setInt(1, job_no);
+            ResultSet rs = pstmt.executeQuery();
+            
+            while(rs.next()){
+                tasks.add(new Task(rs.getString("task_desc"), rs.getInt("task_no")));
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        sql = "SELECT * FROM part INNER JOIN task_part ON part.part_no = task_part.part_no WHERE task_no=?";
+        for (Task t : tasks){
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+                pstmt.setInt(1, t.getTask_no());
+                ResultSet rs = pstmt.executeQuery();
+
+                while(rs.next()){
+                    //int part_no, int quantity, String part_name, String description, float price
+                    int part_no = rs.getInt("part_no");
+                    boolean part_found = false;
+                    for (Part p : parts){
+                        if (p.getPart_no() == part_no){
+                            p.addAmount(rs.getInt("amount"));
+                            part_found = true;
+                        }
+                    }
+                    
+                    if (!part_found){
+                        parts.add(new Part(part_no, rs.getInt("amount"), rs.getString("part_name"), rs.getString("description"), rs.getFloat("price")));
+                    }
+                }
+
+                pstmt.close();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());            
+                System.out.println(sql);
+            }
+        }
+                
+        data[6] = tasks;
+        data[7] = parts;
+        
+        sql = "SELECT * FROM staff INNER JOIN job ON staff.staff_no = job.staff_no WHERE job_no=?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setInt(1, job_no);
+            ResultSet rs = pstmt.executeQuery();
+
+            while(rs.next()){
+                hourly_rate = rs.getFloat("hourly_rate");
+                time_taken = rs.getFloat("estimated_time");
+                data[8] = hourly_rate;
+                data[9] = time_taken;
+            }
+
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+                
+        return data;
+    }
+
+    public LocalDateTime executeLDTQuery(String sql, ValueObject value, String search) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            value.set(pstmt, 1);
+            ResultSet rs = pstmt.executeQuery();
+            
+            while(rs.next()){
+                return rs.getTimestamp(search).toLocalDateTime();
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        return null;
+    }
+
+    public boolean executeBooleanQuery(String sql) {
+        boolean out = false;
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            ResultSet rs = pstmt.executeQuery();
+            
+            while(rs.next()){
+                out = rs.getBoolean(1);
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        return out;
+    }
+
+    public Object[][] getOutstandingDetails() {
+        String sql = "SELECT * FROM job LEFT JOIN customer ON job.customer_no = customer.customer_no WHERE reminder_state != 0 AND reminder_state != 5 AND status = 'Complete' ORDER BY job_no";
+        ArrayList<Object[]> output = new ArrayList<>();
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            ResultSet rs = pstmt.executeQuery();
+            
+            while(rs.next()){
+                Object[] out = new Object[4];
+                out[0] = rs.getInt("job_no");
+                out[1] = rs.getString("customer_name");
+                out[2] = rs.getString("reg_no");
+                String state = "sql error";
+                switch (rs.getInt("reminder_state")){
+                    case 0: 
+                        state = "Job incomplete";
+                        break;
+                    case 1: 
+                        state = "Invoice printed";
+                        break;
+                    case 2: 
+                        state = "1st Reminder";
+                        break;
+                    case 3: 
+                        state = "2nd Reminder";
+                        break;
+                    case 4: 
+                        state = "Final Reminder";
+                        break;
+                    case 5: 
+                        state = "Paid in full";
+                        break;
+                }
+                out[3] = state;
+                output.add(out);
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        Object[][] out = new Object[output.size()][];
+        out = output.toArray(out);
+        return out;
+    }
+
+    public boolean checkCustomerPaid(int customer_no) {
+        String sql = "SELECT reminder_state FROM job INNER JOIN customer ON job.customer_no = customer.customer_no WHERE job.customer_no = ?";
+        boolean out = true;
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setInt(1, customer_no);
+            ResultSet rs = pstmt.executeQuery();
+            
+            while(rs.next()){
+                if (rs.getInt("reminder_state") != 5){
+                    out = false;
+                    break;
+                }
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        return out;
+    }
+
+    public String[] getTasks(String sql, int value) {
+        ArrayList<String> strings = new ArrayList<>();
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setInt(1, value);
+            ResultSet rs = pstmt.executeQuery();
+            
+            while(rs.next()){
+                String out = rs.getString("task_desc");
+                if (rs.getInt("status") == 1) out = out + " ✓";
+                
+                strings.add(out);
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        assert(strings.size() > 0);
+        String[] type = new String[strings.size()];
+        return strings.toArray(type);
+    }
+
+    public void completeTask(int task_no) {
+        //check if task is already complete
+        String sql = "SELECT status FROM task WHERE task_no=?";
+        boolean incomplete = false;
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setInt(1, task_no);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()){
+                if (rs.getInt("status") == 0){
+                    incomplete = true;
+                }
+            }
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        if (incomplete){
+            executeStatement("UPDATE task SET status=1 WHERE task_no='" + task_no + "'");
+            ArrayList<String> statements = getStockSQLFromTask(task_no);
+            statements.forEach((s) -> {
+                executeStatement(s);
+            });
+        }
+        
+    }
     
+    public ArrayList<String> getStockSQLFromTask(int task_no){
+        ArrayList<String> statements = new ArrayList<>();
+            
+        String sql = "SELECT part.part_no, amount FROM task_part INNER JOIN part ON task_part.part_no = part.part_no WHERE task_no=?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setInt(1, task_no);
+            ResultSet rs = pstmt.executeQuery();
+            
+            while(rs.next()){
+                int amount = rs.getInt("amount");
+                int part_no = rs.getInt("part_no");
+                String remove = "UPDATE part SET stock_amount = stock_amount - " + amount + " WHERE part_no = " + part_no;
+                String stockUpdate = "INSERT INTO stock (part_no, stock_change) VALUES (" + part_no + ", " + (0 - amount) + ")";
+                statements.add(remove);
+                statements.add(stockUpdate);
+            }
+
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        return statements;
+    }
+
+    public void completeJob(int job_no) {
+        String sql = "UPDATE job SET status = 'Complete', completion_date = CURRENT_DATE WHERE job_no=" + job_no;
+        executeStatement(sql);
+        ArrayList<Integer> tasks = getIdNos("task WHERE job_no = " + job_no, "task_no");
+        
+        tasks.forEach((i) -> {
+            completeTask(i);
+        });
+    }
+
+    public Object[][] getStockLevels() {
+        String sql = "SELECT * FROM part ORDER BY part_no";
+        ArrayList<Object[]> output = new ArrayList<>();
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            ResultSet rs = pstmt.executeQuery();
+            //"Part Number", "Name", "Description", "Current Level", "New Level", "Threshold"
+            while(rs.next()){
+                Object[] out = new Object[6];
+                out[0] = rs.getInt("part_no");
+                out[1] = rs.getString("part_name");
+                out[2] = rs.getString("description");
+                out[3] = rs.getInt("stock_amount");
+                out[4] = rs.getInt("stock_amount");
+                out[5] = rs.getInt("threshold");
+                output.add(out);
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        Object[][] out = new Object[output.size()][];
+        out = output.toArray(out);
+        return out;
+    }
+    
+    public void updateStockLevel(int part_no, int old_amount, int new_amount){
+        executeStatement("UPDATE part SET stock_amount = " + new_amount + " WHERE part_no =" + part_no);
+        int difference = new_amount - old_amount;
+        executeStatement("INSERT INTO stock (part_no, stock_change) VALUES (" + part_no + ", " + difference + ")");
+    }
+
+    public Object[][] getStockReportDetails(LocalDateTime from, LocalDateTime to) {
+        //"Part Name", "Description", "Price", "Initial Stock", "Initial Cost", "Used", "Delivery", "New Stock", "Stock Cost", "Threshold"
+        //part          part           part     part.amount-stock   n           stock   stock       part.amount-stock n         part
+        ArrayList<Object[]> output = new ArrayList<>();
+        
+        String sql = "SELECT * FROM part ORDER BY part_no";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            ResultSet rs = pstmt.executeQuery();
+            //"Part Number", "Name", "Description", "Current Level", "New Level", "Threshold"
+            while(rs.next()){
+                Object[] out = new Object[10];
+                int part_no = rs.getInt("part_no");
+                out[0] = rs.getString("part_name");
+                out[1] = rs.getString("description");
+                out[2] = rs.getFloat("price");
+                int stock_amount = rs.getInt("stock_amount");
+                out[3] = getStockLevelAt(part_no, from, stock_amount);
+                out[4] = (int) out[3] * (float) out[2];
+                out[5] = getStockChange(part_no, from, to, -1);
+                out[6] = getStockChange(part_no, from, to,  1);
+                out[7] = getStockLevelAt(part_no, to, stock_amount);
+                out[8] = (int) out[7] * (float) out[2];
+                out[9] = rs.getInt("threshold");
+                output.add(out);
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        Object[][] out = new Object[output.size()][];
+        out = output.toArray(out);
+        return out;
+    }
+
+    private int getStockLevelAt(int part_no, LocalDateTime date, int stock_amount) {
+        String sql = "SELECT stock_change FROM stock WHERE part_no = ? AND date > ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setInt(1, part_no);
+            pstmt.setDate(2, Date.valueOf(date.toLocalDate()));
+            ResultSet rs = pstmt.executeQuery();
+            
+            int amount = stock_amount;
+            while(rs.next()){
+                amount = amount + rs.getInt("stock_change");
+            }
+            
+            pstmt.close();
+            return amount;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        return -1;
+    }
+
+    private int getStockChange(int part_no, LocalDateTime from, LocalDateTime to, int type) {
+        String sql = "SELECT stock_change FROM stock WHERE part_no = ? AND date >= ? AND date <= ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setInt(1, part_no);
+            pstmt.setDate(2, Date.valueOf(from.toLocalDate()));
+            pstmt.setDate(3, Date.valueOf(to.toLocalDate()));
+            ResultSet rs = pstmt.executeQuery();
+            
+            int amount = 0;
+            while(rs.next()){
+                int change = rs.getInt("stock_change");
+                
+                //if type 1 then add all positives, if -1 then add negatives
+                if (type > 0){
+                    if (change > 0){
+                        amount = amount + rs.getInt("stock_change");
+                    }
+                } else {
+                    if (change < 0){
+                        amount = amount + rs.getInt("stock_change");
+                    }
+                }
+            }
+            
+            pstmt.close();
+            return abs(amount);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        return -1;
+    }
+    
+    public Object[][] getVehicleDetails(ValueObject no){
+        //"Vehicle Registration", "Make", "Model", "Colour", "Engine Serial #", "chassis_no", "Last MOT Date"
+        String sql = "SELECT * FROM vehicle WHERE customer_no=?";
+        ArrayList<Object[]> details = new ArrayList<>();
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            no.set(pstmt, 1);
+            ResultSet rs = pstmt.executeQuery();
+            
+            while (rs.next()){
+                Object[] row = new Object[7];
+                row[0] = rs.getString("reg_no");
+                row[1] = rs.getString("make");
+                row[2] = rs.getString("model");
+                row[3] = rs.getString("colour");
+                row[4] = rs.getString("eng_serial");
+                row[5] = rs.getString("chassis_no");
+                Timestamp t = rs.getTimestamp("last_mot");
+                if (t == null){
+                    row[6] = "";
+                } else {
+                    row[6] = t.toLocalDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE);
+                }
+                details.add(row);
+            }
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        Object[][] out = new Object[details.size()][];
+        out = details.toArray(out);
+        return out;
+    }
+
+    public ArrayList<Stock> getLowStock() {
+        ArrayList<Stock> stocks = new ArrayList<>();
+        //int part_no, String part_name, String part_desc, int amount, float cost
+        String sql = "SELECT * FROM part WHERE stock_amount < threshold";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()){
+                Stock s = new Stock(rs.getInt("part_no"), rs.getString("part_name"), rs.getString("description"), rs.getInt("threshold") - rs.getInt("stock_amount"), rs.getFloat("price"));
+                stocks.add(s);
+            }
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        
+        return stocks;
+    }
 }
