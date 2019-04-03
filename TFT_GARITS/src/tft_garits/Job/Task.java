@@ -20,6 +20,11 @@ public class Task {
         this.description = description;
         this.task_no = task_no;
     }
+    
+    @Override
+    public String toString(){
+        return description;
+    }
 
     public String getDescription() {
         return description;

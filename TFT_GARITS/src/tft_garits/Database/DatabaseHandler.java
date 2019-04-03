@@ -5,7 +5,12 @@
  */
 package tft_garits.Database;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import static java.lang.Math.abs;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -18,6 +23,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import tft_garits.Job.Task;
 import tft_garits.Stock.Part;
 import tft_garits.Stock.Stock;
@@ -37,13 +46,92 @@ public class DatabaseHandler {
     }
     
     public void backupDatabase() {
-        // TODO - implement MySQLite.backupDatabase
-        throw new UnsupportedOperationException("MySQLite.backupDatabase() needs implementation");
+        //code largely from:
+        //https://stackoverflow.com/questions/3810288/how-to-do-a-backup-from-a-postgresql-db-via-jdbc
+        final List<String> baseCmds = new ArrayList<String>();
+        File path = new File("").getAbsoluteFile();
+        baseCmds.add("/usr/local/cellar/postgresql/11.2/bin/pg_dump");
+        baseCmds.add("-h");
+        baseCmds.add("localhost");
+        baseCmds.add("-p");
+        baseCmds.add("5433");
+        baseCmds.add("-U");
+        baseCmds.add("postgres");
+        baseCmds.add("-b");
+        baseCmds.add("-Fc");
+        baseCmds.add("-f");
+        baseCmds.add(path.getPath() + "/db/backup.dump");
+        baseCmds.add("postgres");
+        
+        final ProcessBuilder pb = new ProcessBuilder(baseCmds);
+        
+        // Set the password
+        final Map<String, String> env = pb.environment();
+        env.put("PGPASSWORD", "root");
+
+        try {
+            final Process process = pb.start();
+
+            final BufferedReader r = new BufferedReader(
+                      new InputStreamReader(process.getErrorStream()));
+            String line = r.readLine();
+            while (line != null) {
+                System.err.println(line);
+                line = r.readLine();
+            }
+            r.close();
+
+            final int dcertExitCode = process.waitFor();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        } 
     }
 
     public void restoreDatabase() {
-        // TODO - implement MySQLite.restoreDatabase
-        throw new UnsupportedOperationException("MySQLite.restoreDatabase() needs implementation");
+        executeStatement("DROP SCHEMA public CASCADE;");
+        executeStatement("CREATE SCHEMA public;");
+        final List<String> baseCmds = new ArrayList<String>();
+        File path = new File("").getAbsoluteFile();
+        baseCmds.add("/usr/local/cellar/postgresql/11.2/bin/pg_restore");
+        baseCmds.add("-h");
+        baseCmds.add("localhost");
+        baseCmds.add("-p");
+        baseCmds.add("5433");
+        baseCmds.add("-U");
+        baseCmds.add("postgres");
+        baseCmds.add("-d");
+        baseCmds.add("postgres");
+        baseCmds.add("-v");
+        baseCmds.add(path.getPath() + "/db/backup.dump");
+        
+        final ProcessBuilder pb = new ProcessBuilder(baseCmds);
+        
+        // Set the password
+        final Map<String, String> env = pb.environment();
+        env.put("PGPASSWORD", "root");
+
+        try {
+            final Process process = pb.start();
+
+            final BufferedReader r = new BufferedReader(
+                      new InputStreamReader(process.getErrorStream()));
+            String line = r.readLine();
+            while (line != null) {
+                System.err.println(line);
+                line = r.readLine();
+            }
+            r.close();
+
+            final int dcertExitCode = process.waitFor();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        } 
     }
     
     public void executeStatement(String sql){
@@ -387,10 +475,12 @@ public class DatabaseHandler {
                         + ");");
                 
         executeStatement("CREATE TABLE IF NOT EXISTS AccountHolder (\n"
-                            + "accountId INT NOT NULL,\n"
+                            + "accountId SERIAL NOT NULL,\n"
                             + "customer_no INT NOT NULL,\n"
-                            + "discount varchar NOT NULL,\n"
-                            + "amountSpent FLOAT NOT NULL,\n"
+                            + "discount_type int NOT NULL DEFAULT 0,\n" //0 is none, 1 is fixed, 2 is variable, 3 is flexible
+                            + "discount_amount FLOAT,\n"
+                            + "check_limit FLOAT,\n"
+                            + "monthly_spending FLOAT DEFAULT 0,\n"
                             + "PRIMARY KEY (accountId)\n"
                         + ");");
                 
@@ -1159,6 +1249,26 @@ public class DatabaseHandler {
         String[] type = new String[strings.size()];
         return strings.toArray(type);
     }
+    
+    public ArrayList<Task> getTasks(String sql) {
+        ArrayList<Task> tasks = new ArrayList<>();
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            ResultSet rs = pstmt.executeQuery();
+            
+            while(rs.next()){
+                Task t = new Task(rs.getString("task_desc"), rs.getInt("task_no"));
+                
+                tasks.add(t);
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        return tasks;
+    }
 
     public void completeTask(int task_no) {
         //check if task is already complete
@@ -1406,4 +1516,28 @@ public class DatabaseHandler {
         
         return stocks;
     }
+
+    public Object[] getDiscountInfo(ValueObject id) {
+        //discount_type int, discount_amount FLOAT, limit FLOAT, monthly_spending
+        String sql = "SELECT * FROM account_holder WHERE customer_no=?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            id.set(pstmt, 1);
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()){
+                Object[] data = new Object[4];
+                data[0] = rs.getInt("discount_type");
+                data[1] = rs.getFloat("discount_amount");
+                data[2] = rs.getFloat("limit");
+                data[3] = rs.getFloat("monthly_spending");
+                return data;
+            }
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        return null;
+    }
+
 }

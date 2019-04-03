@@ -40,10 +40,12 @@ public class GARITS { //GUI handler & main class
             Path stockOrder = Paths.get("documents/stockOrder");
             Path invoice = Paths.get("documents/invoices");
             Path stockReport = Paths.get("documents/stockReports");
+            Path db = Paths.get("db");
             Files.createDirectories(reminder);
             Files.createDirectories(invoice);
             Files.createDirectories(stockOrder);
             Files.createDirectories(stockReport);
+            Files.createDirectories(db);
         } catch (IOException ex) {
             Logger.getLogger(GARITS.class.getName()).log(Level.SEVERE, null, ex);
         }
