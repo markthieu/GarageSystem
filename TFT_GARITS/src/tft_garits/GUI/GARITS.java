@@ -41,6 +41,8 @@ public class GARITS { //GUI handler & main class
             Path invoice = Paths.get("documents/invoices");
             Path stockReport = Paths.get("documents/stockReports");
             Path db = Paths.get("db");
+            Path letters = Paths.get("documents/letters");
+            Files.createDirectories(letters);
             Files.createDirectories(reminder);
             Files.createDirectories(invoice);
             Files.createDirectories(stockOrder);
@@ -53,7 +55,7 @@ public class GARITS { //GUI handler & main class
         //creates account table and initialises with admin account
         try {
             databaseHandler.createNewTable();
-            databaseHandler.insertUser("admin", "tft", "Admin", null);
+            databaseHandler.insertUser("SYSDBA", "Masterkey", "Admin", null);
             
             /* Create and display the form */
             java.awt.EventQueue.invokeLater(new Runnable() {

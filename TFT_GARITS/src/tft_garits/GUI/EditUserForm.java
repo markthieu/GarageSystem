@@ -46,6 +46,8 @@ public class EditUserForm extends Form {
         JobRoleBox = new javax.swing.JComboBox<>();
         UserIdBox = new javax.swing.JComboBox<>();
         deleteButton = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
+        rateField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -94,36 +96,43 @@ public class EditUserForm extends Form {
             }
         });
 
+        jLabel6.setText("Hourly Rate, £:");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addGap(141, 141, 141))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel2)
-                            .addComponent(jButton1)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel5))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(fullNameField)
-                            .addComponent(jPasswordField1)
-                            .addComponent(JobRoleBox, 0, 258, Short.MAX_VALUE)
-                            .addComponent(UserIdBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(editButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(deleteButton)))
+                        .addComponent(deleteButton))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(12, 12, 12)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel4)
+                                    .addComponent(jLabel5)
+                                    .addComponent(jLabel6))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(fullNameField)
+                                    .addComponent(jPasswordField1)
+                                    .addComponent(JobRoleBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(UserIdBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(rateField, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jButton1))
+                        .addGap(0, 18, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(141, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addGap(129, 129, 129))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -150,9 +159,13 @@ public class EditUserForm extends Form {
                     .addComponent(JobRoleBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(editButton)
-                    .addComponent(deleteButton))
-                .addContainerGap(30, Short.MAX_VALUE))
+                    .addComponent(jLabel6)
+                    .addComponent(rateField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(deleteButton)
+                    .addComponent(editButton))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -203,6 +216,12 @@ public class EditUserForm extends Form {
             gui.databaseHandler.executeStatement("UPDATE staff SET staff_name=? WHERE user_name=?", full_name, user_name);
             gui.databaseHandler.executeStatement("UPDATE login SET account_type=? WHERE user_name=?", account_type, user_name);
             
+            try {
+                float rate = Float.parseFloat(rateField.getText());
+                gui.databaseHandler.executeStatement("UPDATE staff SET hourly_rate = " + rate + " WHERE user_name = '" + user_name + "'");
+            } catch (NumberFormatException e){
+                
+            }
             refreshUserIdBox();
             UserIdBox.setSelectedIndex(selectedIndex);
             editButton.setText("Saved");
@@ -239,6 +258,11 @@ public class EditUserForm extends Form {
                         account_type.equals("Mechanic") ? 3 :  
                         account_type.equals("Receptionist") ? 4 : 0;
             JobRoleBox.setSelectedIndex(index);
+            
+            float rate = gui.databaseHandler.executeFloatQuery("SELECT hourly_rate FROM staff WHERE user_name = ?", user_name, "hourly_rate");
+            if (rate != -1){
+                rateField.setText(String.format("%.2f", rate));
+            }
         } else {
             //UserIdBox.setSelectedIndex(0);
             jPasswordField1.setText("");
@@ -260,8 +284,10 @@ public class EditUserForm extends Form {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPasswordField jPasswordField1;
+    private javax.swing.JTextField rateField;
     // End of variables declaration//GEN-END:variables
 
     private void refreshUserIdBox() {

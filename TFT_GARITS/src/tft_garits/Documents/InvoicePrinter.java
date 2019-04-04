@@ -17,6 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import tft_garits.GUI.GUI;
 import tft_garits.Job.Task;
 import tft_garits.Stock.Part;
 
@@ -36,9 +37,11 @@ public class InvoicePrinter extends Printer{
     ArrayList<Part> parts;
     float hourly_rate;
     float estimated_time;
+    float discount_rate;
+    GUI gui;
     
-    public InvoicePrinter(Object[] data){
-        
+    public InvoicePrinter(Object[] data, GUI gui){
+        this.gui = gui;
         job_no = (int) data[0];
         now = LocalDateTime.now();
         customer_name = (String) data[1];
@@ -52,6 +55,8 @@ public class InvoicePrinter extends Printer{
         
         hourly_rate = (float) data[8];
         estimated_time = (float) data[9];
+        
+        discount_rate = gui.databaseHandler.executeFloatQuery("SELECT discount_amount FROM accountholder INNER JOIN vehicle ON accountholder.customer_no = vehicle.customer_no WHERE (discount_type = 1 OR discount_type = 2) AND reg_no=?", reg_no, "discount_amount");
         
         name = "documents/invoices/" + job_no + "invoice.pdf";
     }
@@ -86,6 +91,10 @@ public class InvoicePrinter extends Printer{
             makeTable(table);
             
             doc.add(table);
+            
+            if (discount_rate != -1){
+                doc.add(new Paragraph("\nAs one of our valued account holders we have applied your discount of %" + discount_rate + "."));
+            }
             
             doc.add(new Paragraph("\nThank you for your valued custom. We look forward to receiving your payment in due course.\n\n\n" +
                                         "Yours sincerely,\n\n" +
@@ -142,6 +151,17 @@ public class InvoicePrinter extends Printer{
         table.addCell(createBlankCell("£" + String.format("%.2f", total)));
         table.completeRow();
         
+        if (discount_rate != -1){
+            float discount = total * (discount_rate/100);
+            total = total - (discount);
+            table.addCell(createBlankCell(""));
+            table.addCell(createBlankCell(""));
+            table.addCell(createBlankCell("Discount: "));
+            table.addCell(createBlankCell(""));
+            table.addCell(createBlankCell("-£" + String.format("%.2f", discount)));
+            table.completeRow();
+        }
+        
         //VAT total
         float VATtotal = (float) (total * 0.2);
         table.addCell(createBlankCell(""));
@@ -159,5 +179,7 @@ public class InvoicePrinter extends Printer{
         table.addCell(createBlankCell(""));
         table.addCell(createBlankCell("£" + String.format("%.2f", grandTotal)));
         table.completeRow();
+        
+        gui.databaseHandler.executeStatement("UPDATE job SET totalamount = " + grandTotal + " WHERE job_no = " + job_no);
     }
 }

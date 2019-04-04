@@ -9,8 +9,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import static java.lang.Integer.min;
 import static java.lang.Math.abs;
 import java.nio.file.Path;
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -463,7 +465,7 @@ public class DatabaseHandler {
                         + ");");
                 
         executeStatement("CREATE TABLE IF NOT EXISTS Vehicle (\n"
-                            + "reg_no varchar NOT NULL,\n"
+                            + "reg_no varchar NOT NULL UNIQUE,\n"
                             + "customer_no int NOT NULL,\n"
                             + "make varchar NOT NULL,\n"
                             + "model varchar NOT NULL,\n"
@@ -476,17 +478,18 @@ public class DatabaseHandler {
                 
         executeStatement("CREATE TABLE IF NOT EXISTS AccountHolder (\n"
                             + "accountId SERIAL NOT NULL,\n"
-                            + "customer_no INT NOT NULL,\n"
+                            + "customer_no INT NOT NULL UNIQUE,\n"
                             + "discount_type int NOT NULL DEFAULT 0,\n" //0 is none, 1 is fixed, 2 is variable, 3 is flexible
                             + "discount_amount FLOAT,\n"
-                            + "check_limit FLOAT,\n"
+                            + "flex_limit FLOAT[],\n"
+                            + "flex_discount FLOAT[],\n"
                             + "monthly_spending FLOAT DEFAULT 0,\n"
                             + "PRIMARY KEY (accountId)\n"
                         + ");");
                 
         executeStatement("CREATE TABLE IF NOT EXISTS login (\n"
                             + "id SERIAL NOT NULL,\n"
-                            + "user_name varchar NOT NULL,\n"
+                            + "user_name varchar NOT NULL UNIQUE,\n"
                             + "password varchar NOT NULL,\n"
                             + "account_type varchar NOT NULL,\n"
                             + "PRIMARY KEY (user_name)\n"
@@ -499,7 +502,7 @@ public class DatabaseHandler {
                         + ");");
           
         executeStatement("ALTER TABLE Job DROP CONSTRAINT IF EXISTS Job_fk0;");
-        executeStatement("ALTER TABLE Job ADD CONSTRAINT Job_fk0 FOREIGN KEY (customer_no) REFERENCES Customer(customer_no);");
+        executeStatement("ALTER TABLE Job ADD CONSTRAINT Job_fk0 FOREIGN KEY (customer_no) REFERENCES Customer(customer_no) ON DELETE CASCADE;");
                 
         executeStatement("ALTER TABLE Job DROP CONSTRAINT IF EXISTS Job_fk1;");
         executeStatement("ALTER TABLE Job ADD CONSTRAINT Job_fk1 FOREIGN KEY (reg_no) REFERENCES Vehicle(reg_no);");
@@ -511,16 +514,16 @@ public class DatabaseHandler {
         executeStatement("ALTER TABLE Staff ADD CONSTRAINT Staff_fk0 FOREIGN KEY (user_name) REFERENCES login(user_name);");
                 
         executeStatement("ALTER TABLE Task DROP CONSTRAINT IF EXISTS Task_fk0;");
-        executeStatement("ALTER TABLE Task ADD CONSTRAINT Task_fk0 FOREIGN KEY (job_no) REFERENCES Job(job_no);");
+        executeStatement("ALTER TABLE Task ADD CONSTRAINT Task_fk0 FOREIGN KEY (job_no) REFERENCES Job(job_no) ON DELETE CASCADE;");
         
         executeStatement("ALTER TABLE Stock DROP CONSTRAINT IF EXISTS Stock_fk0;");
-        executeStatement("ALTER TABLE Stock ADD CONSTRAINT Stock_fk0 FOREIGN KEY (part_no) REFERENCES Part(part_no);");
+        executeStatement("ALTER TABLE Stock ADD CONSTRAINT Stock_fk0 FOREIGN KEY (part_no) REFERENCES Part(part_no) ON DELETE CASCADE;");
         
         executeStatement("ALTER TABLE Vehicle DROP CONSTRAINT IF EXISTS Vehicle_fk0;");
-        executeStatement("ALTER TABLE Vehicle ADD CONSTRAINT Vehicle_fk0 FOREIGN KEY (customer_no) REFERENCES Customer(customer_no);");
+        executeStatement("ALTER TABLE Vehicle ADD CONSTRAINT Vehicle_fk0 FOREIGN KEY (customer_no) REFERENCES Customer(customer_no) ON DELETE CASCADE;");
                 
         executeStatement("ALTER TABLE AccountHolder DROP CONSTRAINT IF EXISTS AccountHolder_fk0;");
-        executeStatement("ALTER TABLE AccountHolder ADD CONSTRAINT AccountHolder_fk0 FOREIGN KEY (customer_no) REFERENCES Customer(customer_no);");
+        executeStatement("ALTER TABLE AccountHolder ADD CONSTRAINT AccountHolder_fk0 FOREIGN KEY (customer_no) REFERENCES Customer(customer_no) ON DELETE CASCADE;");
         
     }
 
@@ -1518,8 +1521,7 @@ public class DatabaseHandler {
     }
 
     public Object[] getDiscountInfo(ValueObject id) {
-        //discount_type int, discount_amount FLOAT, limit FLOAT, monthly_spending
-        String sql = "SELECT * FROM account_holder WHERE customer_no=?";
+        String sql = "SELECT * FROM accountholder WHERE customer_no=?";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)){
             id.set(pstmt, 1);
             ResultSet rs = pstmt.executeQuery();
@@ -1527,8 +1529,7 @@ public class DatabaseHandler {
                 Object[] data = new Object[4];
                 data[0] = rs.getInt("discount_type");
                 data[1] = rs.getFloat("discount_amount");
-                data[2] = rs.getFloat("limit");
-                data[3] = rs.getFloat("monthly_spending");
+                data[2] = rs.getFloat("monthly_spending");
                 return data;
             }
             pstmt.close();
@@ -1540,4 +1541,108 @@ public class DatabaseHandler {
         return null;
     }
 
+    public Object[][] getFlexDiscountValues(int customer_no) {
+        Object[][] values = {{null, null}, {null, null}, {null, null}, {null, null}, {null, null}};
+        String sql = "SELECT flex_discount, flex_limit FROM accountholder WHERE customer_no=?";
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setInt(1, customer_no);
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()){
+                Object dis = rs.getArray("flex_discount");
+                if (dis == null){
+                    return values;
+                }
+                
+                Double[] discounts = (Double[]) ((Array) dis).getArray();
+                Double[] limits = (Double[]) rs.getArray("flex_limit").getArray();
+                for (int i = 0; i < 5; i++){
+                    if (limits.length <= i){
+                        values[i][0] = null;
+                    } else {
+                        values[i][0] = limits[i];
+                    }
+                    
+                    if (discounts.length <= i){
+                        values[i][1] = null;
+                    } else {
+                        values[i][1] = discounts[i];
+                    }
+                }
+                
+                return values;
+            }
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        return values;
+    }
+
+    public void setFlexDetails(float[] amount, float[] discount, int customer_no) {
+        int aVno = 0;
+        int dVno = 0;
+        for (int i = 0; i < 5; i++){
+            if (floatValid(amount[i])) aVno = i;
+            if (floatValid(discount[i])) dVno = i;
+        }
+        int size = min(aVno, dVno) + 1;
+        
+        Object[] inAmount = new Object[size];
+        Object[] inDiscount = new Object[size];
+        
+        for (int i = 0; i < size; i++){
+            inAmount[i] = amount[i];
+            inDiscount[i] = discount[i];
+        }
+        
+        String sql = "UPDATE accountholder SET flex_limit = ?, flex_discount = ? WHERE customer_no = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setArray(1, conn.createArrayOf("float", inAmount));
+            pstmt.setArray(2, conn.createArrayOf("float", inDiscount));
+            pstmt.setInt(3, customer_no);
+            pstmt.execute();
+            pstmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+    }
+    
+    private boolean floatValid(float a){
+        return a > 0;
+    }
+    
+    public String[] getAddress(int customer_no){
+        
+        String sql = "SELECT address, post_code FROM customer WHERE customer_no = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setInt(1, customer_no);
+            
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()){
+                String address = rs.getString("address");
+                String post_code = rs.getString("post_code");
+
+                String[] customer_address = address.split(", ");
+
+                for (int i = 0; i < customer_address.length; i++){
+                    if (i < customer_address.length-1){
+                        customer_address[i] = customer_address[i] + ", ";
+                    } else {
+                        customer_address[i] = customer_address[i] + " " + post_code;
+                    }
+                }
+                return customer_address;
+            }
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());            
+            System.out.println(sql);
+        }
+        
+        return null;
+    }
 }

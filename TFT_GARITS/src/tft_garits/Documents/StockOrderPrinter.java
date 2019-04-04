@@ -41,10 +41,10 @@ public class StockOrderPrinter extends Printer {
             doc.open();
             formatAddress(qffAddress, new String[0], doc);
             doc.add(new Paragraph("Date: " + now.format(DateTimeFormatter.ofPattern("d MMMM uuuu"))));
-            doc.add(new Paragraph("\n\nCompany: Fjord Distribution Ltd\n" +
-                                  "Address: 25 The Causeway, Staines, Middlesex\n\n\n"));
-            doc.add(new Paragraph("Tel: 01784 407862\n" +
-                                  "Fax: 01784 407863\n\n"));
+            doc.add(new Paragraph("\n\nCompany: Fjord Supplies \n" +
+                                  "Address: 10 Largeunits, Trade Estate, Reading, RG10 4PT\n\n\n"));
+            doc.add(new Paragraph("Tel: 01895 453 857\n" +
+                                  "\n"));
             
             PdfPTable table = new PdfPTable(4);
             table.setWidthPercentage(100);

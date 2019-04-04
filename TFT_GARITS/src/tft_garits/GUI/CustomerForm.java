@@ -403,7 +403,7 @@ public class CustomerForm extends Form {
         int customerID = Integer.parseInt(idNoTextField.getText());
         if (gui.databaseHandler.checkCustomerPaid(customerID)){
             clearFields();
-            gui.databaseHandler.executeStatement("DELETE FROM customer WHERE customer_no='" + customerID + "'");
+            gui.databaseHandler.executeStatement("DELETE FROM customer CASCADE WHERE customer_no='" + customerID + "'");
 
             gui.throwErrorForm("Removed customer " + customerID);
 

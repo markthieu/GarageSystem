@@ -277,7 +277,7 @@ public class JobListForm extends Form {
             if (data[i][4].equals("Complete")){
                 Object[] details = gui.databaseHandler.getInvoiceDetails(job_no);
                 if (details[8] != null) {
-                    Printer printer = new InvoicePrinter(details);
+                    Printer printer = new InvoicePrinter(details, gui);
                     printer.print();
                     gui.databaseHandler.executeStatement("UPDATE job SET reminder_state = 1, invoice_date = CURRENT_DATE WHERE job_no=" + job_no);
                     gui.throwErrorForm("Printed invoice " + job_no + ".");

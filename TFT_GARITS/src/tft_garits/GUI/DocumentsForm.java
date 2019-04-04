@@ -39,6 +39,7 @@ public class DocumentsForm extends Form {
         stockButton = new javax.swing.JButton();
         oustandingButton = new javax.swing.JButton();
         motButton = new javax.swing.JButton();
+        printButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -72,25 +73,34 @@ public class DocumentsForm extends Form {
             }
         });
 
+        printButton.setText("Printing");
+        printButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                printButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
                         .addComponent(jButton1)
-                        .addGap(147, 147, 147)
+                        .addGap(83, 83, 83)
                         .addComponent(jLabel1))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(41, 41, 41)
-                        .addComponent(stockButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(oustandingButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(motButton)))
-                .addContainerGap(52, Short.MAX_VALUE))
+                        .addGap(23, 23, 23)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(stockButton)
+                            .addComponent(oustandingButton))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(motButton)
+                            .addComponent(printButton))))
+                .addContainerGap(23, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -102,12 +112,15 @@ public class DocumentsForm extends Form {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(36, 36, 36)
                         .addComponent(jLabel1)))
-                .addGap(36, 36, 36)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(stockButton)
-                    .addComponent(oustandingButton)
                     .addComponent(motButton))
-                .addContainerGap(29, Short.MAX_VALUE))
+                .addGap(5, 5, 5)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(oustandingButton)
+                    .addComponent(printButton))
+                .addContainerGap(26, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -151,6 +164,13 @@ public class DocumentsForm extends Form {
         form3.setVisible(true);
     }//GEN-LAST:event_motButtonActionPerformed
 
+    private void printButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_printButtonActionPerformed
+        PrintForm form3 = new PrintForm(gui);
+        this.dispose();
+        form3.setLocationRelativeTo(null); //centres the window on the screen
+        form3.setVisible(true);
+    }//GEN-LAST:event_printButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -162,6 +182,7 @@ public class DocumentsForm extends Form {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JButton motButton;
     private javax.swing.JButton oustandingButton;
+    private javax.swing.JButton printButton;
     private javax.swing.JButton stockButton;
     // End of variables declaration//GEN-END:variables
 

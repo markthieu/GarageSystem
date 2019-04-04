@@ -24,6 +24,7 @@ public class GUI {
     
     public DatabaseHandler databaseHandler;
     public User currentUser; 
+    boolean notified = false;
 
     public GUI(DatabaseHandler databaseHandler) {
         this.databaseHandler = databaseHandler;
@@ -139,11 +140,14 @@ public class GUI {
     }
 
     private void stockNotification() {
-        ArrayList<Stock> lowStock = databaseHandler.getLowStock();
-        //stockEntries.add(new Stock(part_no, name, desc, price));
-        if (lowStock.size() > 0){
-            Form lowStockAlert = new lowStockAlert(lowStock, this);
-            showForm(lowStockAlert);
+        if (!notified){
+            ArrayList<Stock> lowStock = databaseHandler.getLowStock();
+            //stockEntries.add(new Stock(part_no, name, desc, price));
+            if (lowStock.size() > 0){
+                Form lowStockAlert = new lowStockAlert(lowStock, this);
+                showForm(lowStockAlert);
+            }
         }
+        notified = true;
     }
 }

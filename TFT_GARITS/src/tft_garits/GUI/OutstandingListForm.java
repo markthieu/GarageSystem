@@ -202,6 +202,10 @@ public class OutstandingListForm extends Form {
         for (int i : rows){
             int job_no = (int) data[i][0];
             gui.databaseHandler.executeStatement("UPDATE job SET reminder_state = 5 WHERE job_no = " + job_no);
+            if (!data[i][3].equals("Paid in full")){
+                gui.databaseHandler.executeStatement("UPDATE accountholder SET monthly_spending = monthly_spending + totalamount \n" +
+                "FROM job WHERE job.customer_no = accountholder.customer_no AND job_no = " + job_no);
+            }
         }
         
         updateTable();

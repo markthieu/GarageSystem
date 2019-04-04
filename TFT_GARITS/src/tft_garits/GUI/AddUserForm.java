@@ -175,6 +175,12 @@ public class AddUserForm extends Form {
             //job_role =
 
             gui.databaseHandler.insertUser(user_name, new String(password), account_type, full_name);
+            if (account_type.equals("Mechanic")){
+                gui.databaseHandler.executeStatement("UPDATE staff SET hourly_rate = 105 WHERE user_name = '" + user_name + "'");
+            } else if (account_type.equals("Foreperson")) {
+                gui.databaseHandler.executeStatement("UPDATE staff SET hourly_rate = 125 WHERE user_name = '" + user_name + "'");
+            }
+            
             gui.throwErrorForm(user_name + " added.");
             //POP UP
             jTextField1.setText("");

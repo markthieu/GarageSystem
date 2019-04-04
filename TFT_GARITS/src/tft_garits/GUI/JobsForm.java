@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import tft_garits.Account.Mechanic;
 import tft_garits.Database.ValueObject;
 
 /**
@@ -31,6 +32,10 @@ public class JobsForm extends Form {
         
         refreshMechanicBox();
         refreshCustomerBox();
+        
+        if (gui.currentUser instanceof Mechanic){
+            createButton.setEnabled(false);
+        }
     }
 
     /**
